@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar de Atendimento em Telecom · Anatel + IBGE</title>
+<meta name="description" content="Lâmina executiva: reclamações de consumidores de telecom (Anatel) cruzadas com população (IBGE), com comparação ano contra ano.">
+<style>
+/* =====================================================================
+   TEMA (troque só este bloco para mudar a identidade da lâmina)
+   Paleta inspirada nas cores do site da Konecta. Sem logo de propósito:
+   a lâmina é um case autoral, não material oficial da empresa.
+   ===================================================================== */
+:root {
+  --marca: #2A01CD;          /* azul-violeta principal */
+  --marca-escura: #0F0F72;   /* fundo do cabeçalho */
+  --marca-clara: #A6B7FF;    /* lavanda */
+  --coral: #F05252;          /* destaque */
+  --amarelo: #F0FA00;        /* destaque pontual */
+  --teal: #09BFAF;           /* destaque */
+}
+/* =====================================================================
+   PAPÉIS DE COR: os gráficos usam o papel, nunca o código da cor.
+   Modo escuro tem valores próprios (não é inversão automática).
+   ===================================================================== */
+:root {
+  color-scheme: light;
+  --page: #F2F3F7; --surface: #ffffff; --surface-2: #f5f6fa;
+  --ink: #0F0F0F; --ink-2: #46465a; --muted: #7d7e92;
+  --grid: #e6e7ef; --axis: #c6c8d6; --border: rgba(15,15,114,.10);
+  --s1: var(--marca); --s1-soft: rgba(42,1,205,.10); --prev: #aeb0c2;
+  --good: #067a3a; --bad: #c62f3a; --good-bg: #e3f5ea; --bad-bg: #fde8ea;
+  --warn-bg: #fff6cc; --warn-ink: #6b5600;
+  --ok-bg: #e3f5ea; --err-bg: #fde8ea; --info-bg: #eceaff;
+  --shadow: 0 1px 2px rgba(15,15,114,.05), 0 8px 24px rgba(15,15,114,.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #0a0a19; --surface: #14142b; --surface-2: #1c1c3a;
+    --ink: #F2F3F7; --ink-2: #c3c5dc; --muted: #8a8ca8;
+    --grid: #25254a; --axis: #35355f; --border: rgba(166,183,255,.14);
+    --s1: var(--marca-clara); --s1-soft: rgba(166,183,255,.16); --prev: #5b5d7e;
+    --good: #3ddc84; --bad: #ff7b7b; --good-bg: rgba(61,220,132,.12); --bad-bg: rgba(255,123,123,.12);
+    --warn-bg: #3a3410; --warn-ink: #f4e36b;
+    --ok-bg: rgba(61,220,132,.12); --err-bg: rgba(255,123,123,.12); --info-bg: rgba(166,183,255,.14);
+    --shadow: 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--page); color: var(--ink);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--s1); }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px 40px; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ---------- faixa de amostra ---------- */
+.faixa-amostra {
+  background: #fab219; color: #0b0b0b; text-align: center; font-weight: 700;
+  padding: 8px 12px; letter-spacing: .02em;
+}
+
+/* ---------- cabeçalho (hero) ---------- */
+.hero {
+  position: relative; overflow: hidden; color: #fff;
+  background:
+    radial-gradient(900px 420px at 88% 0%, rgba(240,82,82,.38), transparent 60%),
+    radial-gradient(700px 380px at 70% 110%, rgba(9,191,175,.22), transparent 60%),
+    linear-gradient(120deg, var(--marca-escura) 0%, var(--marca) 62%, #4a2bff 100%);
+  padding: 34px 0 88px;
+}
+.hero .wrap { position: relative; z-index: 1; padding-bottom: 0; }
+.hero-arte { position: absolute; right: -60px; top: -70px; width: 520px; height: 520px; opacity: .9; pointer-events: none; }
+.hero-arte .varredura { transform-origin: 260px 260px; animation: girar 9s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .hero-arte .varredura { animation: none; } }
+@media (max-width: 900px) { .hero-arte { opacity: .35; } }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--amarelo); }
+h1 { font-size: clamp(30px, 4.4vw, 48px); line-height: 1.05; margin: 10px 0 0; letter-spacing: -.02em; max-width: 760px; }
+.pergunta { font-size: clamp(16px, 1.6vw, 19px); color: rgba(255,255,255,.86); margin: 12px 0 0; max-width: 760px; line-height: 1.45; }
+.meta-linha { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12.5px; margin-top: 18px; }
+.meta-linha span { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); padding: 5px 11px; border-radius: 999px; color: rgba(255,255,255,.85); }
+.meta-linha b { color: #fff; font-weight: 650; }
+.autoria { margin-top: 14px; font-size: 12.5px; color: rgba(255,255,255,.7); }
+.autoria b { color: #fff; }
+/* ---------- filtros ---------- */
+.filtros {
+  position: sticky; top: 8px; z-index: 20; margin: -56px 0 18px;
+  background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(10px);
+  border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 12px 16px;
+}
+.filtros .linha { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; }
+.campo { display: grid; gap: 3px; }
+.campo label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+select, button {
+  font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px; min-height: 36px;
+}
+select { min-width: 150px; }
+button { cursor: pointer; }
+button:hover, select:hover { border-color: var(--axis); }
+button:focus-visible, select:focus-visible, .tile:focus-visible, th button:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
+.btn-limpar { background: transparent; color: var(--ink-2); }
+.periodo-pill {
+  margin-left: auto; font-size: 12.5px; color: var(--ink-2); background: var(--surface-2);
+  border-radius: 999px; padding: 6px 12px; border: 1px solid var(--border);
+}
+.periodo-pill b { color: var(--ink); }
+
+/* ---------- cartões ---------- */
+.grade { display: grid; gap: 16px; }
+.cartao {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  padding: 18px 20px; box-shadow: var(--shadow); min-width: 0;
+}
+.cartao h2 { font-size: 16px; margin: 0; letter-spacing: -.01em; }
+.cartao .sub { font-size: 12.5px; color: var(--muted); margin: 2px 0 12px; }
+.cabeca { display: flex; justify-content: space-between; align-items: start; gap: 12px; flex-wrap: wrap; }
+
+/* ---------- resumo executivo ---------- */
+.resumo { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.insight { position: relative; overflow: hidden; }
+.insight::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--cor-insight, var(--marca)); }
+.insight .rotulo { display: flex; align-items: center; gap: 10px; font-size: 11.5px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); }
+.insight .icone { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--cor-insight, var(--marca)) 14%, transparent); color: var(--cor-insight, var(--marca)); }
+.insight-mudou { --cor-insight: var(--marca); }
+.insight-doi { --cor-insight: var(--coral); }
+.insight-agir { --cor-insight: var(--teal); }
+@media (prefers-color-scheme: dark) { .insight-mudou { --cor-insight: var(--marca-clara); } }
+.insight p { margin: 12px 0 0; font-size: 14.5px; line-height: 1.55; }
+.insight p strong { font-weight: 650; }
+
+/* ---------- KPIs ---------- */
+.kpis { grid-template-columns: repeat(7, minmax(0, 1fr)); margin-top: 16px; }
+.kpi { padding: 14px 14px 12px; }
+.kpi .nome { font-size: 12px; color: var(--ink-2); font-weight: 600; }
+.kpi .detalhe { font-size: 11px; color: var(--muted); }
+.kpi { position: relative; }
+.kpi .valor { font-size: 30px; font-weight: 750; letter-spacing: -.02em; margin: 8px 0 6px; color: var(--ink); }
+.kpi .valor small { font-size: 14px; font-weight: 600; color: var(--ink-2); margin-left: 2px; }
+.delta { display: inline-flex; gap: 4px; align-items: baseline; font-size: 11.5px; font-weight: 650; padding: 3px 8px; border-radius: 999px; }
+.delta.bom { color: var(--good); background: var(--good-bg); } .delta.ruim { color: var(--bad); background: var(--bad-bg); }
+.delta.neutro { color: var(--muted); background: var(--surface-2); }
+.delta .ref { font-weight: 400; color: var(--muted); }
+
+/* ---------- layouts de linha ---------- */
+.linha-2-1 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); margin-top: 16px; }
+.linha-1-1 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin-top: 16px; }
+.linha-1-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); margin-top: 16px; }
+@media (max-width: 1100px) {
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .resumo, .linha-2-1, .linha-1-1, .linha-1-2 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- gráficos ---------- */
+.grafico { width: 100%; position: relative; }
+.grafico svg { display: block; width: 100%; overflow: visible; }
+.grafico text { fill: var(--muted); font-size: 11px; }
+.legenda { display: flex; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 6px; flex-wrap: wrap; }
+.legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.legenda i { display: inline-block; width: 16px; height: 2px; border-radius: 2px; }
+#tooltip {
+  position: fixed; pointer-events: none; z-index: 50; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; font-size: 12px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.14); min-width: 150px; opacity: 0; transition: opacity .08s;
+}
+#tooltip .t-titulo { font-weight: 650; margin-bottom: 4px; }
+#tooltip .t-linha { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+#tooltip .t-linha i { width: 12px; height: 2px; border-radius: 2px; display: inline-block; margin-right: 6px; }
+#tooltip .t-linha b { font-variant-numeric: tabular-nums; }
+#tooltip .t-nome { color: var(--ink-2); }
+
+/* mapa em mosaico */
+.mapa { display: grid; grid-template-columns: repeat(6, 42px); grid-auto-rows: 42px; gap: 4px; justify-content: center; margin: 8px auto 0; }
+.tile {
+  width: 42px; height: 42px; border-radius: 6px; border: 0; padding: 0; display: grid; place-content: center;
+  font-size: 11px; font-weight: 700; line-height: 1.1; text-align: center; cursor: pointer;
+}
+.tile small { display: block; font-size: 10px; font-weight: 500; opacity: .9; }
+.tile.selecionado { outline: 2px solid var(--ink); outline-offset: 1px; }
+.tile.apagado { opacity: .35; }
+.escala { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); justify-content: center; margin-top: 10px; }
+.escala .barra { width: 160px; height: 8px; border-radius: 4px; }
+
+/* barras horizontais em HTML */
+.barras { display: grid; gap: 7px; }
+.barra-linha { display: grid; grid-template-columns: minmax(110px, 1.4fr) minmax(0, 2fr) 52px 66px; gap: 10px; align-items: center; font-size: 12.5px; }
+.barra-linha .rot { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.barra-trilho { height: 14px; position: relative; }
+.barra-preench { height: 100%; background: var(--s1); border-radius: 0 4px 4px 0; min-width: 2px; }
+.barra-linha .val { text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.barra-linha .val b { color: var(--ink); }
+.barra-linha .val.marca-acima, .marca-acima { color: var(--bad); font-weight: 650; }
+
+/* tabela */
+.tabela-wrap { overflow-x: auto; margin: 0 -4px; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th, td { padding: 8px 8px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
+th { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; vertical-align: bottom; }
+th button { all: unset; cursor: pointer; display: inline-flex; gap: 3px; align-items: center; }
+th.grupo-col { border-bottom: 0; padding-bottom: 0; text-align: center; color: var(--ink-2); }
+td { font-variant-numeric: tabular-nums; }
+tbody tr:hover td { background: var(--surface-2); }
+tfoot td { font-weight: 700; border-top: 2px solid var(--axis); border-bottom: 0; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip-btn { font-size: 12px; padding: 5px 10px; min-height: 30px; border-radius: 999px; }
+.chip-btn[aria-pressed="true"] { background: var(--marca); color: #fff; border-color: var(--marca); }
+@media (prefers-color-scheme: dark) { .chip-btn[aria-pressed="true"] { background: var(--marca-clara); color: #0a0a19; border-color: var(--marca-clara); } }
+
+/* qualidade */
+.status { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: .03em; }
+.status.OK { background: var(--ok-bg); color: var(--good); }
+.status.ALERTA { background: var(--warn-bg); color: var(--warn-ink); }
+.status.ERRO { background: var(--err-bg); color: var(--bad); }
+.status.INFO { background: var(--info-bg); color: var(--s1); }
+.checks { display: grid; gap: 6px; font-size: 12.5px; }
+.check { display: grid; grid-template-columns: 70px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 6px 0; border-bottom: 1px solid var(--grid); }
+.check .det { color: var(--muted); font-size: 11.5px; }
+details summary { cursor: pointer; color: var(--s1); font-size: 12.5px; margin-top: 8px; }
+.execucoes td, .execucoes th { text-align: left; }
+
+/* rodapé */
+.metodologia { font-size: 13px; color: var(--ink-2); }
+.metodologia h2 { color: var(--ink); }
+.metodologia dt { font-weight: 650; color: var(--ink); margin-top: 8px; }
+.metodologia dd { margin: 2px 0 0; }
+footer { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.erro-carga { max-width: 640px; margin: 80px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+@media print {
+  .filtros { position: static; }
+  .cartao { box-shadow: none; break-inside: avoid; }
+  details { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="faixa"></div>
+<div id="app" hidden>
+<header class="hero">
+  <svg class="hero-arte" viewBox="0 0 520 520" aria-hidden="true">
+    <defs>
+      <radialGradient id="brilho" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#A6B7FF" stop-opacity=".35"/><stop offset="1" stop-color="#A6B7FF" stop-opacity="0"/></radialGradient>
+      <linearGradient id="feixe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#A6B7FF" stop-opacity="0"/><stop offset="1" stop-color="#A6B7FF" stop-opacity=".45"/></linearGradient>
+    </defs>
+    <circle cx="260" cy="260" r="250" fill="url(#brilho)"/>
+    <g fill="none" stroke="rgba(255,255,255,.16)" stroke-width="1.2">
+      <circle cx="260" cy="260" r="70"/><circle cx="260" cy="260" r="130"/><circle cx="260" cy="260" r="190"/><circle cx="260" cy="260" r="248"/>
+      <line x1="10" y1="260" x2="510" y2="260"/><line x1="260" y1="10" x2="260" y2="510"/>
+    </g>
+    <g class="varredura"><path d="M260 260 L508 260 A248 248 0 0 0 435 85 Z" fill="url(#feixe)"/></g>
+    <g>
+      <circle cx="360" cy="170" r="6" fill="#F05252"/><circle cx="360" cy="170" r="14" fill="none" stroke="#F05252" stroke-opacity=".5"/>
+      <circle cx="190" cy="330" r="5" fill="#F0FA00"/><circle cx="410" cy="320" r="4" fill="#09BFAF"/>
+      <circle cx="300" cy="400" r="4" fill="#ffffff" fill-opacity=".8"/><circle cx="150" cy="200" r="3.5" fill="#ffffff" fill-opacity=".6"/>
+    </g>
+  </svg>
+  <div class="wrap">
+    <div class="eyebrow">Lâmina executiva · Atendimento ao consumidor de telecom</div>
+    <h1>Radar de Atendimento em Telecom</h1>
+    <p class="pergunta">Onde o atendimento das operadoras está falhando, e o que melhorou ou piorou em relação ao mesmo período do ano anterior?</p>
+    <div class="meta-linha" id="metaLinha"></div>
+    <div class="autoria">Case técnico por <b>Lucas Mateus Sureira</b> · Data &amp; Performance Analyst · dados públicos Anatel + IBGE</div>
+  </div>
+</header>
+<div class="wrap">
+
+  
+  <nav class="filtros" aria-label="Filtros">
+    <div class="linha">
+      <div class="campo"><label for="fAno">Ano</label><select id="fAno"></select></div>
+      <div class="campo"><label for="fRegiao">Região</label><select id="fRegiao"></select></div>
+      <div class="campo"><label for="fUf">UF</label><select id="fUf"></select></div>
+      <div class="campo"><label for="fServico">Serviço</label><select id="fServico"></select></div>
+      <div class="campo"><label for="fOperadora">Operadora</label><select id="fOperadora"></select></div>
+      <button class="btn-limpar" id="btnLimpar" type="button">Limpar filtros</button>
+      <div class="periodo-pill" id="periodoPill"></div>
+    </div>
+  </nav>
+
+  <section class="grade resumo" aria-label="Resumo executivo" id="resumo"></section>
+
+  <section class="grade kpis" aria-label="Indicadores" id="kpis"></section>
+
+  <section class="grade linha-2-1">
+    <article class="cartao">
+      <div class="cabeca">
+        <div><h2 id="tituloEvolucao">Evolução mensal</h2><p class="sub" id="subEvolucao"></p></div>
+        <div class="campo"><label for="fMetrica">Indicador</label><select id="fMetrica"></select></div>
+      </div>
+      <div class="legenda" id="legendaEvolucao"></div>
+      <div class="grafico" id="gEvolucao"></div>
+    </article>
+    <article class="cartao">
+      <h2>Reclamações por 100 mil habitantes</h2>
+      <p class="sub">Cruza Anatel com a população do IBGE. Clique num estado para filtrar.</p>
+      <div class="mapa" id="mapa" role="group" aria-label="Mapa em mosaico das UFs"></div>
+      <div class="escala" id="escalaMapa"></div>
+    </article>
+  </section>
+
+  <section class="grade linha-1-1">
+    <article class="cartao">
+      <h2>Operadoras: velocidade x resolução no primeiro contato</h2>
+      <p class="sub">Tempo médio de resposta (→) contra taxa de reabertura (↑). Tamanho = volume. Linhas = média do recorte. Clique para filtrar.</p>
+      <div class="grafico" id="gOperadoras"></div>
+    </article>
+    <article class="cartao">
+      <h2>O que gera reclamação</h2>
+      <p class="sub" id="subAssuntos">Participação de cada assunto no volume e sua taxa de reabertura.</p>
+      <div class="barras" id="gAssuntos"></div>
+    </article>
+  </section>
+
+  <section class="cartao" style="margin-top:16px" aria-label="Tabela de medidas">
+    <div class="cabeca">
+      <div>
+        <h2>Tabela de medidas</h2>
+        <p class="sub" id="subTabela"></p>
+      </div>
+      <div class="chips" role="group" aria-label="Agrupar tabela por">
+        <button class="chip-btn" data-agrupar="operadora" type="button">Operadora</button>
+        <button class="chip-btn" data-agrupar="servico" type="button">Serviço</button>
+        <button class="chip-btn" data-agrupar="regiao" type="button">Região</button>
+        <button class="chip-btn" data-agrupar="uf" type="button">UF</button>
+        <button class="chip-btn" id="btnCsv" type="button">⬇ Baixar CSV</button>
+      </div>
+    </div>
+    <div class="tabela-wrap"><table id="tabela"></table></div>
+  </section>
+
+  <section class="grade linha-1-2">
+    <article class="cartao" id="cartaoCanal">
+      <h2>Por onde o consumidor reclama</h2>
+      <p class="sub" id="subCanal">Canal usado para registrar a reclamação na Anatel (base complementar).</p>
+      <div class="barras" id="gCanal"></div>
+    </article>
+    <article class="cartao">
+      <div class="cabeca">
+        <div><h2>Qualidade e atualização dos dados</h2>
+        <p class="sub">Checagens automáticas que rodam antes de cada publicação. Com ERRO, nada é publicado.</p></div>
+        <div id="resumoQualidade" class="chips"></div>
+      </div>
+      <div class="checks" id="checks"></div>
+      <details><summary>Histórico de atualizações</summary><div class="tabela-wrap"><table class="execucoes" id="execucoes"></table></div></details>
+    </article>
+  </section>
+
+  <section class="cartao metodologia" style="margin-top:16px">
+    <h2>Como ler os números</h2>
+    <dl id="definicoes"></dl>
+    <p style="margin-top:12px"><b>Fontes:</b> <span id="fontes"></span></p>
+  </section>
+
+  <footer>
+    <span>Lucas Mateus Sureira · Data &amp; Performance Analyst · <a href="https://github.com/lucasaccardo/radar-atendimento-consumidor">código e documentação no GitHub</a></span>
+    <span id="rodapeGerado"></span>
+  </footer>
+</div>
+</div>
+<div id="tooltip" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   1) CARREGAMENTO
+   Os dados vêm de data/dados.js (gerado pelo pipeline). Com ?amostra na
+   URL, carrega a amostra sintética de teste, com uma faixa de aviso.
+   ===================================================================== */
+const AMOSTRA = new URLSearchParams(location.search).has("amostra");
+(function carregar() {
+  const s = document.createElement("script");
+  s.src = (AMOSTRA ? "data_amostra" : "data") + "/dados.js";
+  s.onload = () => (window.RADAR ? iniciar() : erroCarga());
+  s.onerror = erroCarga;
+  document.head.appendChild(s);
+})();
+
+function erroCarga() {
+  const d = document.createElement("div");
+  d.className = "erro-carga";
+  d.innerHTML = "<h2>Dados ainda não gerados</h2><p>Rode o pipeline na pasta do projeto:</p>" +
+    "<p><code>python pipeline/executar_pipeline.py</code></p>" +
+    "<p class='muted'>Para ver a lâmina com dados de teste, abra com <code>?amostra</code> no fim do endereço.</p>";
+  document.body.appendChild(d);
+}
+
+/* =====================================================================
+   2) UTILITÁRIOS DE FORMATAÇÃO (padrão brasileiro)
+   ===================================================================== */
+const NOMES_MES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const nf0 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+const nf1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const nf2 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt = {
+  int: v => v == null ? "—" : nf0.format(v),
+  d1: v => v == null ? "—" : nf1.format(v),
+  d2: v => v == null ? "—" : nf2.format(v),
+  pct: v => v == null ? "—" : nf1.format(v) + "%",
+  compacto: v => v == null ? "—" : v >= 1e6 ? nf1.format(v / 1e6) + " mi" : v >= 1e4 ? nf0.format(v / 1e3) + " mil" : nf0.format(v),
+};
+const el = id => document.getElementById(id);
+const css = nome => getComputedStyle(document.documentElement).getPropertyValue(nome).trim();
+const SVGNS = "http://www.w3.org/2000/svg";
+function svg(tag, attrs = {}, pai) {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (pai) pai.appendChild(n);
+  return n;
+}
+function texto(tag, conteudo, classe) {   // textContent: nomes vêm de dados externos
+  const n = document.createElement(tag);
+  if (classe) n.className = classe;
+  n.textContent = conteudo;
+  return n;
+}
+function escalaBonita(min, max, n = 5) {
+  if (min === max) { max = min + 1; }
+  const passoBruto = (max - min) / n;
+  const mag = Math.pow(10, Math.floor(Math.log10(passoBruto)));
+  const passo = [1, 2, 2.5, 5, 10].map(m => m * mag).find(p => p >= passoBruto);
+  const ini = Math.floor(min / passo) * passo, fim = Math.ceil(max / passo) * passo;
+  const ticks = [];
+  for (let v = ini; v <= fim + passo / 2; v += passo) ticks.push(+v.toFixed(10));
+  return ticks;
+}
+
+/* tooltip único, reaproveitado por todos os gráficos */
+const tip = el("tooltip");
+function mostrarTip(evento, titulo, linhas) {
+  tip.replaceChildren(texto("div", titulo, "t-titulo"));
+  for (const l of linhas) {
+    const row = document.createElement("div"); row.className = "t-linha";
+    const nome = document.createElement("span"); nome.className = "t-nome";
+    if (l.cor) { const i = document.createElement("i"); i.style.background = l.cor; nome.appendChild(i); }
+    nome.appendChild(document.createTextNode(l.nome));
+    row.append(nome, texto("b", l.valor));
+    tip.appendChild(row);
+  }
+  const x = evento.clientX, y = evento.clientY, w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(window.innerWidth - w - 8, x + 14) + "px";
+  tip.style.top = (y + h + 20 > window.innerHeight ? y - h - 14 : y + 14) + "px";
+  tip.style.opacity = 1;
+}
+function esconderTip() { tip.style.opacity = 0; }
+
+/* =====================================================================
+   3) MODELO: lê os cubos e calcula as medidas com o filtro atual.
+   Os cubos trazem SOMAS e CONTAGENS; as médias e % são calculadas aqui,
+   sempre como razão de somas (nunca média de médias).
+   ===================================================================== */
+let D, M, IM, MESES, UFS, REGIOES, ESTADO;
+const KPIS = [
+  { id: "reclamacoes", nome: "Reclamações", detalhe: "soma no período", f: fmt.int, delta: "pct", melhor: -1 },
+  { id: "por100k", nome: "Por 100 mil hab.", detalhe: "÷ população IBGE", f: fmt.d1, delta: "pct", melhor: -1 },
+  { id: "tempo", nome: "Tempo de resposta", detalhe: "média, em dias", f: fmt.d1, unidade: "dias", delta: "abs", melhor: -1 },
+  { id: "sla", nome: "Respondidas no prazo", detalhe: "", f: fmt.pct, delta: "pp", melhor: 1 },
+  { id: "reabertura", nome: "Taxa de reabertura", detalhe: "termômetro de FCR", f: fmt.pct, delta: "pp", melhor: -1 },
+  { id: "resolvidas", nome: "Resolvidas", detalhe: "entre as avaliadas", f: fmt.pct, delta: "pp", melhor: 1 },
+  { id: "nota", nome: "Nota média", detalhe: "escala de 1 a 5", f: fmt.d2, delta: "abs2", melhor: 1 },
+];
+
+function iniciar() {
+  D = window.RADAR;
+  M = D.medidas; IM = Object.fromEntries(M.map((n, i) => [n, i]));
+  MESES = D.dimensoes.meses.map((s, i) => ({ i, ano: +s.slice(0, 4), mes: +s.slice(5, 7) }));
+  UFS = D.dimensoes.ufs.map(([sigla, nome, regiao], i) => ({ i, sigla, nome, regiao }));
+  REGIOES = [...new Set(UFS.filter(u => u.sigla !== "NI").map(u => u.regiao))].sort();
+  KPIS.find(k => k.id === "sla").detalhe = `resposta em até ${D.meta.sla_dias} dias`;
+
+  const anos = [...new Set(MESES.map(m => m.ano))].sort((a, b) => b - a);
+  ESTADO = { ano: anos[0], regiao: "", uf: -1, servico: -1, operadora: -1,
+             metrica: "reclamacoes", agrupar: "operadora", ordem: { col: "reclamacoes", dir: -1 } };
+
+  if (D.meta.origem === "amostra_sintetica") {
+    el("faixa").replaceChildren(texto("div", "DADOS SINTÉTICOS DE TESTE: operadoras e números fictícios. Não use para análise.", "faixa-amostra"));
+  }
+  montarFiltros(anos);
+  el("app").hidden = false;
+  renderizar();
+  let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(renderizar, 150); });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderizar);
+}
+
+function opcao(sel, valor, rotulo) { const o = document.createElement("option"); o.value = valor; o.textContent = rotulo; sel.appendChild(o); }
+function montarFiltros(anos) {
+  const fAno = el("fAno"); anos.forEach(a => opcao(fAno, a, a));
+  const fReg = el("fRegiao"); opcao(fReg, "", "Brasil"); REGIOES.forEach(r => opcao(fReg, r, r));
+  const fSrv = el("fServico"); opcao(fSrv, -1, "Todos"); D.dimensoes.servicos.forEach((s, i) => opcao(fSrv, i, s));
+  const fOp = el("fOperadora"); opcao(fOp, -1, "Todas"); D.dimensoes.operadoras.forEach((o, i) => opcao(fOp, i, o));
+  const fMet = el("fMetrica"); KPIS.forEach(k => opcao(fMet, k.id, k.nome));
+  preencherUfs();
+
+  fAno.onchange = () => { ESTADO.ano = +fAno.value; renderizar(); };
+  fReg.onchange = () => { ESTADO.regiao = fReg.value; ESTADO.uf = -1; preencherUfs(); renderizar(); };
+  el("fUf").onchange = () => { ESTADO.uf = +el("fUf").value; renderizar(); };
+  fSrv.onchange = () => { ESTADO.servico = +fSrv.value; renderizar(); };
+  fOp.onchange = () => { ESTADO.operadora = +fOp.value; renderizar(); };
+  fMet.onchange = () => { ESTADO.metrica = fMet.value; renderizar(); };
+  el("btnLimpar").onclick = () => {
+    Object.assign(ESTADO, { regiao: "", uf: -1, servico: -1, operadora: -1 });
+    fReg.value = ""; fSrv.value = -1; fOp.value = -1; preencherUfs(); renderizar();
+  };
+  document.querySelectorAll("[data-agrupar]").forEach(b => b.onclick = () => { ESTADO.agrupar = b.dataset.agrupar; renderizar(); });
+  el("btnCsv").onclick = baixarCsv;
+}
+function preencherUfs() {
+  const f = el("fUf"); f.replaceChildren(); opcao(f, -1, "Todas");
+  UFS.filter(u => u.sigla !== "NI" && (!ESTADO.regiao || u.regiao === ESTADO.regiao))
+     .forEach(u => opcao(f, u.i, `${u.sigla} · ${u.nome}`));
+  f.value = ESTADO.uf;
+}
+function sincronizarFiltros() {
+  el("fRegiao").value = ESTADO.regiao; preencherUfs();
+  el("fServico").value = ESTADO.servico; el("fOperadora").value = ESTADO.operadora;
+  el("fMetrica").value = ESTADO.metrica;
+}
+
+/* período = meses do ano escolhido; comparação = MESMOS meses do ano anterior */
+function periodo() {
+  const atual = MESES.filter(m => m.ano === ESTADO.ano);
+  const nums = new Set(atual.map(m => m.mes));
+  const anterior = MESES.filter(m => m.ano === ESTADO.ano - 1 && nums.has(m.mes));
+  const ok = anterior.length === atual.length && atual.length > 0;
+  const ini = Math.min(...nums), fim = Math.max(...nums);
+  const rot = a => ini === fim ? `${NOMES_MES[ini - 1]}/${a}` : `${NOMES_MES[ini - 1]}–${NOMES_MES[fim - 1]}/${a}`;
+  return { atual: new Set(atual.map(m => m.i)), anterior: new Set(anterior.map(m => m.i)),
+           temComparacao: ok, rotulo: rot(ESTADO.ano), rotuloAnt: rot(ESTADO.ano - 1),
+           numsMes: [...nums].sort((a, b) => a - b) };
+}
+function ufsSelecionadas() {
+  if (ESTADO.uf >= 0) return new Set([ESTADO.uf]);
+  if (ESTADO.regiao) return new Set(UFS.filter(u => u.regiao === ESTADO.regiao).map(u => u.i));
+  return null;
+}
+/* filtro com "ignorar": cada visual ignora o filtro da própria dimensão
+   (o mapa mostra todas as UFs, a matriz mostra todas as operadoras...) */
+function filtro(ignorar = {}) {
+  const ufSet = ignorar.uf ? null : ufsSelecionadas();
+  const srv = ignorar.servico ? -1 : ESTADO.servico, op = ignorar.operadora ? -1 : ESTADO.operadora;
+  return r => (!ufSet || ufSet.has(r[1])) && (srv < 0 || r[2] === srv) && (op < 0 || r[3] === op);
+}
+const novoAcc = () => new Float64Array(M.length);
+function somar(acc, r, ini = 4) { for (let k = 0; k < M.length; k++) acc[k] += r[ini + k]; }
+/* agrega o cubo principal por uma chave; devolve Map(chave -> {atual, anterior}) */
+function agregar(chaveFn, ignorar = {}) {
+  const per = periodo(), f = filtro(ignorar), out = new Map();
+  for (const r of D.cubo.linhas) {
+    const emAtual = per.atual.has(r[0]), emAnt = per.anterior.has(r[0]);
+    if (!(emAtual || emAnt) || !f(r)) continue;
+    const ch = chaveFn(r);
+    let g = out.get(ch); if (!g) { g = { atual: novoAcc(), anterior: novoAcc() }; out.set(ch, g); }
+    somar(emAtual ? g.atual : g.anterior, r);
+  }
+  return out;
+}
+function populacao(ano, ufSet) {
+  const p = D.populacao[ano] || D.populacao[Math.max(...Object.keys(D.populacao).map(Number))];
+  let t = 0;
+  for (const u of UFS) if (u.sigla !== "NI" && (!ufSet || ufSet.has(u.i))) t += p[u.sigla] || 0;
+  return t;
+}
+/* transforma somas em indicadores */
+function indicadores(s, pop, recComUf) {
+  const rec = s[IM.reclamacoes];
+  return {
+    reclamacoes: rec,
+    por100k: pop ? (recComUf ?? rec) / pop * 1e5 : null,
+    tempo: s[IM.qtd_tempo_resposta] ? s[IM.soma_tempo_resposta] / s[IM.qtd_tempo_resposta] : null,
+    sla: rec ? 100 * s[IM.respondidas_no_sla] / rec : null,
+    reabertura: rec ? 100 * s[IM.reabertas] / rec : null,
+    resolvidas: s[IM.avaliadas] ? 100 * s[IM.resolvidas] / s[IM.avaliadas] : null,
+    nota: s[IM.qtd_nota] ? s[IM.soma_nota] / s[IM.qtd_nota] : null,
+  };
+}
+function variacao(k, a, b) {   // devolve {valor, texto, classe}
+  if (a == null || b == null || (k.delta === "pct" && !b)) return null;
+  const v = k.delta === "pct" ? 100 * (a / b - 1) : a - b;
+  const lim = { pct: 0.5, pp: 0.1, abs: 0.05, abs2: 0.01 }[k.delta];
+  const classe = Math.abs(v) < lim ? "neutro" : (v * k.melhor > 0 ? "bom" : "ruim");
+  const sinal = v > 0 ? "+" : v < 0 ? "−" : "";
+  const absv = Math.abs(v);
+  const txt = k.delta === "pct" ? `${sinal}${nf1.format(absv)}%` : k.delta === "pp" ? `${sinal}${nf1.format(absv)} p.p.`
+            : k.delta === "abs2" ? `${sinal}${nf2.format(absv)}` : `${sinal}${nf1.format(absv)} ${k.unidade || ""}`.trim();
+  return { valor: v, texto: txt, classe, seta: v > 0 ? "▲" : v < 0 ? "▼" : "■",
+           palavra: classe === "neutro" ? "estável" : classe === "bom" ? "melhor" : "pior" };
+}
+
+/* =====================================================================
+   4) RENDERIZAÇÃO
+   ===================================================================== */
+function renderizar() {
+  sincronizarFiltros();
+  const per = periodo();
+  const ufSet = ufsSelecionadas();
+  // totais do recorte (com e sem UF "NI", para a taxa por habitante)
+  const porUf = agregar(r => r[1]);
+  const tot = { atual: novoAcc(), anterior: novoAcc() }, recUf = { atual: 0, anterior: 0 };
+  for (const [u, g] of porUf) {
+    for (const lado of ["atual", "anterior"]) {
+      for (let k = 0; k < M.length; k++) tot[lado][k] += g[lado][k];
+      if (UFS[u].sigla !== "NI") recUf[lado] += g[lado][IM.reclamacoes];
+    }
+  }
+  const kAtual = indicadores(tot.atual, populacao(ESTADO.ano, ufSet), recUf.atual);
+  const kAnt = per.temComparacao ? indicadores(tot.anterior, populacao(ESTADO.ano - 1, ufSet), recUf.anterior) : {};
+
+  renderMeta(per);
+  renderKpis(kAtual, kAnt, per);
+  renderEvolucao(per);
+  renderMapa(per);
+  const ops = renderOperadoras(per, kAtual);
+  const assuntos = renderAssuntos(per);
+  renderTabela(per);
+  renderCanal(per);
+  renderResumo(per, kAtual, kAnt, ops, assuntos);
+  renderQualidade();
+  renderMetodologia();
+}
+
+function recorteTexto() {
+  const p = [];
+  if (ESTADO.uf >= 0) p.push(UFS[ESTADO.uf].nome); else if (ESTADO.regiao) p.push(ESTADO.regiao); else p.push("Brasil");
+  if (ESTADO.servico >= 0) p.push(D.dimensoes.servicos[ESTADO.servico]);
+  if (ESTADO.operadora >= 0) p.push(D.dimensoes.operadoras[ESTADO.operadora]);
+  return p.join(" · ");
+}
+
+function renderMeta(per) {
+  const m = D.meta, q = window.QUALIDADE;
+  const ml = el("metaLinha"); ml.replaceChildren();
+  const item = (rot, val) => { const s = document.createElement("span"); s.append(rot + " ", texto("b", val)); ml.appendChild(s); };
+  item("Período:", per.temComparacao ? `${per.rotulo} vs ${per.rotuloAnt}` : per.rotulo);
+  const mesAno = s => `${NOMES_MES[+s.slice(5, 7) - 1]}/${s.slice(0, 4)}`;
+  item("Série disponível:", `${mesAno(m.competencia_inicio)} a ${mesAno(m.competencia_fim)}`);
+  const dt = m.arquivo_anatel_atualizado_em && m.arquivo_anatel_atualizado_em !== "amostra"
+    ? new Date(m.arquivo_anatel_atualizado_em).toLocaleDateString("pt-BR") : "—";
+  item("Arquivo Anatel de:", dt);
+  if (q) item("Qualidade:", q.aprovado ? `aprovada (${q.resumo.ALERTA} alerta${q.resumo.ALERTA === 1 ? "" : "s"})` : "com erro");
+  el("periodoPill").replaceChildren("Recorte: ", texto("b", recorteTexto()));
+  el("rodapeGerado").textContent = `Publicado em ${new Date(m.gerado_em).toLocaleString("pt-BR")}`;
+}
+
+function renderKpis(a, b, per) {
+  const box = el("kpis"); box.replaceChildren();
+  for (const k of KPIS) {
+    const c = document.createElement("article"); c.className = "cartao kpi";
+    c.append(texto("div", k.nome, "nome"), texto("div", k.detalhe, "detalhe"));
+    const v = document.createElement("div"); v.className = "valor num"; v.textContent = k.f(a[k.id]);
+    if (k.unidade) v.appendChild(texto("small", k.unidade));
+    c.appendChild(v);
+    const d = per.temComparacao ? variacao(k, a[k.id], b[k.id]) : null;
+    const linha = document.createElement("div");
+    if (d) {
+      linha.className = `delta ${d.classe}`;
+      linha.append(`${d.seta} ${d.texto} · ${d.palavra}`);
+      linha.title = `Mesmo período de ${ESTADO.ano - 1}: ${k.f(b[k.id])}`;
+    } else { linha.className = "delta neutro"; linha.textContent = "sem ano anterior para comparar"; }
+    c.appendChild(linha);
+    box.appendChild(c);
+  }
+}
+
+/* ---------- 4.1 Gráfico de linha: ano atual x ano anterior ---------- */
+function renderEvolucao(per) {
+  const k = KPIS.find(x => x.id === ESTADO.metrica);
+  const porMes = agregar(r => r[0]);
+  const ufSet = ufsSelecionadas();
+  const serie = (ano) => per.numsMes.map(n => {
+    const m = MESES.find(x => x.ano === ano && x.mes === n);
+    const g = m && porMes.get(m.i);
+    if (!g) return null;
+    const s = per.atual.has(m.i) ? g.atual : g.anterior;
+    const pop = populacao(ano, ufSet) / 12;   // taxa mensal por 100 mil hab.
+    return indicadores(s, pop)[k.id];
+  });
+  // mostra o ano inteiro do ano anterior quando o atual ainda está em andamento
+  const atual = serie(ESTADO.ano), anterior = per.temComparacao ? serie(ESTADO.ano - 1) : null;
+  el("tituloEvolucao").textContent = `Evolução mensal: ${k.nome.toLowerCase()}`;
+  el("subEvolucao").textContent = `${recorteTexto()} · ${ESTADO.ano} comparado com os mesmos meses de ${ESTADO.ano - 1}` +
+    (k.id === "por100k" ? " · taxa mensal" : "");
+  const leg = el("legendaEvolucao"); leg.replaceChildren();
+  const item = (cor, nome) => { const s = document.createElement("span"); const i = document.createElement("i"); i.style.background = cor; s.append(i, nome); leg.appendChild(s); };
+  item(css("--s1"), String(ESTADO.ano)); if (anterior) item(css("--prev"), String(ESTADO.ano - 1));
+
+  const box = el("gEvolucao"); box.replaceChildren();
+  const W = box.clientWidth || 700, H = 300, m = { t: 10, r: 16, b: 26, l: 52 };
+  const vals = [...atual, ...(anterior || [])].filter(v => v != null);
+  if (!vals.length) { box.textContent = "Sem dados para este recorte."; return; }
+  const zeroBase = ["reclamacoes", "por100k"].includes(k.id);
+  let lo = zeroBase ? 0 : Math.min(...vals), hi = Math.max(...vals);
+  if (!zeroBase) { const folga = (hi - lo) * 0.25 || hi * 0.05 || 1; lo -= folga; hi += folga; }
+  const ticks = escalaBonita(lo, hi, 4); lo = ticks[0]; hi = ticks[ticks.length - 1];
+  const n = per.numsMes.length;
+  const x = i => m.l + (n === 1 ? (W - m.l - m.r) / 2 : i * (W - m.l - m.r) / (n - 1));
+  const y = v => m.t + (H - m.t - m.b) * (1 - (v - lo) / (hi - lo));
+  const g = svg("svg", { viewBox: `0 0 ${W} ${H}`, height: H, role: "img",
+    "aria-label": `Linha mensal de ${k.nome} em ${ESTADO.ano} e ${ESTADO.ano - 1}` }, box);
+  for (const t of ticks) {
+    svg("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), stroke: css("--grid"), "stroke-width": 1 }, g);
+    const tx = svg("text", { x: m.l - 8, y: y(t) + 4, "text-anchor": "end", class: "num" }, g);
+    tx.textContent = k.id === "reclamacoes" ? fmt.compacto(t) : (k.f === fmt.pct ? nf0.format(t) + "%" : nf1.format(t));
+  }
+  per.numsMes.forEach((nm, i) => {
+    const tx = svg("text", { x: x(i), y: H - 6, "text-anchor": "middle" }, g); tx.textContent = NOMES_MES[nm - 1];
+  });
+  const linha = (valores, cor, largura) => {
+    let d = "", aberto = false;
+    valores.forEach((v, i) => { if (v == null) { aberto = false; return; } d += `${aberto ? "L" : "M"}${x(i)},${y(v)}`; aberto = true; });
+    svg("path", { d, fill: "none", stroke: cor, "stroke-width": largura, "stroke-linejoin": "round", "stroke-linecap": "round" }, g);
+  };
+  if (anterior) linha(anterior, css("--prev"), 2);
+  linha(atual, css("--s1"), 2.5);
+  // marcador e rótulo direto só no último ponto do ano atual (rotulagem seletiva)
+  const ult = atual.map((v, i) => v != null ? i : -1).filter(i => i >= 0).pop();
+  if (ult != null) {
+    svg("circle", { cx: x(ult), cy: y(atual[ult]), r: 4.5, fill: css("--s1"), stroke: css("--surface"), "stroke-width": 2 }, g);
+  }
+  // camada de interação: a mira encontra o mês mais próximo
+  const mira = svg("line", { y1: m.t, y2: H - m.b, stroke: css("--axis"), "stroke-width": 1, opacity: 0 }, g);
+  const pa = svg("circle", { r: 4, fill: css("--s1"), stroke: css("--surface"), "stroke-width": 2, opacity: 0 }, g);
+  const pb = svg("circle", { r: 4, fill: css("--prev"), stroke: css("--surface"), "stroke-width": 2, opacity: 0 }, g);
+  const area = svg("rect", { x: m.l - 10, y: 0, width: W - m.l - m.r + 20, height: H, fill: "transparent" }, g);
+  const mover = ev => {
+    const bb = g.getBoundingClientRect(); const px = (ev.clientX - bb.left) * (W / bb.width);
+    const i = Math.max(0, Math.min(n - 1, Math.round((px - m.l) / ((W - m.l - m.r) / Math.max(1, n - 1)))));
+    mira.setAttribute("x1", x(i)); mira.setAttribute("x2", x(i)); mira.setAttribute("opacity", 1);
+    const va = atual[i], vb = anterior ? anterior[i] : null;
+    if (va != null) { pa.setAttribute("cx", x(i)); pa.setAttribute("cy", y(va)); pa.setAttribute("opacity", 1); } else pa.setAttribute("opacity", 0);
+    if (vb != null) { pb.setAttribute("cx", x(i)); pb.setAttribute("cy", y(vb)); pb.setAttribute("opacity", 1); } else pb.setAttribute("opacity", 0);
+    const linhas = [{ nome: String(ESTADO.ano), valor: k.f(va), cor: css("--s1") }];
+    if (anterior) linhas.push({ nome: String(ESTADO.ano - 1), valor: k.f(vb), cor: css("--prev") });
+    const dv = anterior ? variacao(k, va, vb) : null;
+    if (dv) linhas.push({ nome: "Variação", valor: `${dv.texto} (${dv.palavra})` });
+    // média móvel de 3 meses: a medida temporal que suaviza oscilação de um mês só
+    const janela = atual.slice(Math.max(0, i - 2), i + 1).filter(v => v != null);
+    if (janela.length === 3) linhas.push({ nome: "Média móvel 3 meses", valor: k.f(janela.reduce((s, v) => s + v, 0) / 3) });
+    mostrarTip(ev, `${NOMES_MES[per.numsMes[i] - 1]}`, linhas);
+  };
+  area.addEventListener("pointermove", mover);
+  area.addEventListener("pointerleave", () => { mira.setAttribute("opacity", 0); pa.setAttribute("opacity", 0); pb.setAttribute("opacity", 0); esconderTip(); });
+}
+
+/* ---------- 4.2 Mapa em mosaico (cada UF = um quadrado) ---------- */
+const POSICOES = {   // [coluna, linha] aproximando a geografia do Brasil
+  RR: [1, 0], AP: [3, 0], AM: [1, 1], PA: [2, 1], MA: [3, 1], CE: [4, 1], RN: [5, 1],
+  AC: [0, 2], RO: [1, 2], TO: [2, 2], PI: [3, 2], PE: [4, 2], PB: [5, 2],
+  MT: [1, 3], GO: [2, 3], BA: [3, 3], SE: [4, 3], AL: [5, 3],
+  MS: [1, 4], DF: [2, 4], MG: [3, 4], ES: [4, 4],
+  PR: [1, 5], SP: [2, 5], RJ: [3, 5], SC: [1, 6], RS: [1, 7],
+};
+// rampa sequencial de UMA cor (violeta da marca): claro = menos, escuro = mais
+const RAMPA = ["#f0f2ff","#e1e6ff","#cbd3ff","#b3bfff","#a6b7ff","#8b93fb","#7270f2","#5a4de6","#4227d9","#2a01cd","#2006a6","#170b84","#0f0f72"];
+function renderMapa(per) {
+  const porUf = agregar(r => r[1], { uf: true });
+  const ufSel = ufsSelecionadas();
+  const dados = UFS.filter(u => u.sigla !== "NI").map(u => {
+    const g = porUf.get(u.i), rec = g ? g.atual[IM.reclamacoes] : 0, recAnt = g ? g.anterior[IM.reclamacoes] : 0;
+    const pop = populacao(ESTADO.ano, new Set([u.i])), popAnt = populacao(ESTADO.ano - 1, new Set([u.i]));
+    return { u, rec, taxa: pop ? rec / pop * 1e5 : 0, taxaAnt: per.temComparacao && popAnt ? recAnt / popAnt * 1e5 : null };
+  });
+  const lo = Math.min(...dados.map(d => d.taxa)), hi = Math.max(...dados.map(d => d.taxa));
+  const escuro = matchMedia("(prefers-color-scheme: dark)").matches;
+  const rampa = escuro ? [...RAMPA].reverse() : RAMPA;
+  const cor = v => { const t = hi > lo ? (v - lo) / (hi - lo) : 0.5; const i = Math.round(1 + t * (rampa.length - 3)); return { bg: rampa[i], claro: escuro ? i < 6 : i >= 6 }; };
+  const box = el("mapa"); box.replaceChildren();
+  for (const d of dados) {
+    const [c, l] = POSICOES[d.u.sigla] || [5, 7];
+    const b = document.createElement("button"); b.type = "button"; b.className = "tile num";
+    const k = cor(d.taxa);
+    b.style.background = k.bg; b.style.color = k.claro ? "#ffffff" : "#0b0b0b";
+    b.style.gridColumn = c + 1; b.style.gridRow = l + 1;
+    b.append(d.u.sigla, texto("small", nf0.format(d.taxa)));
+    if (ESTADO.uf === d.u.i) b.classList.add("selecionado");
+    else if (ufSel && !ufSel.has(d.u.i)) b.classList.add("apagado");
+    b.setAttribute("aria-label", `${d.u.nome}: ${nf1.format(d.taxa)} reclamações por 100 mil habitantes`);
+    b.onclick = () => { ESTADO.uf = ESTADO.uf === d.u.i ? -1 : d.u.i; if (ESTADO.uf >= 0) ESTADO.regiao = ""; renderizar(); };
+    const tipFn = ev => {
+      const var_ = d.taxaAnt ? variacao(KPIS[1], d.taxa, d.taxaAnt) : null;
+      mostrarTip(ev, d.u.nome, [
+        { nome: "Por 100 mil hab.", valor: nf1.format(d.taxa) },
+        { nome: "Reclamações", valor: fmt.int(d.rec) },
+        ...(var_ ? [{ nome: `vs ${ESTADO.ano - 1}`, valor: `${var_.texto} (${var_.palavra})` }] : []),
+      ]);
+    };
+    b.addEventListener("pointermove", tipFn); b.addEventListener("pointerleave", esconderTip);
+    box.appendChild(b);
+  }
+  const esc = el("escalaMapa"); esc.replaceChildren();
+  const barra = document.createElement("span"); barra.className = "barra";
+  barra.style.background = `linear-gradient(90deg, ${rampa.slice(1, -1).join(",")})`;
+  esc.append(texto("span", nf0.format(lo)), barra, texto("span", nf0.format(hi) + " por 100 mil hab. no período"));
+}
+
+/* ---------- 4.3 Matriz de operadoras (bolhas) ---------- */
+function renderOperadoras(per, kTotal) {
+  const porOp = agregar(r => r[3], { operadora: true });
+  const lista = [...porOp].map(([o, g]) => ({ o, nome: D.dimensoes.operadoras[o], k: indicadores(g.atual), kAnt: indicadores(g.anterior) }))
+    .filter(d => d.k.reclamacoes > 0 && d.k.tempo != null);
+  const box = el("gOperadoras"); box.replaceChildren();
+  if (!lista.length) { box.textContent = "Sem dados para este recorte."; return lista; }
+  const totalRec = lista.reduce((s, d) => s + d.k.reclamacoes, 0);
+  const media = { tempo: lista.reduce((s, d) => s + d.k.tempo * d.k.reclamacoes, 0) / totalRec,
+                  reab: lista.reduce((s, d) => s + d.k.reabertura * d.k.reclamacoes, 0) / totalRec };
+  const W = box.clientWidth || 520, H = 300, m = { t: 14, r: 20, b: 34, l: 46 };
+  const xs = lista.map(d => d.k.tempo), ys = lista.map(d => d.k.reabertura);
+  const tx = escalaBonita(Math.min(...xs) * 0.9, Math.max(...xs) * 1.08, 5), ty = escalaBonita(Math.min(...ys) * 0.85, Math.max(...ys) * 1.1, 4);
+  const x = v => m.l + (W - m.l - m.r) * (v - tx[0]) / (tx[tx.length - 1] - tx[0]);
+  const y = v => m.t + (H - m.t - m.b) * (1 - (v - ty[0]) / (ty[ty.length - 1] - ty[0]));
+  const maxRec = Math.max(...lista.map(d => d.k.reclamacoes));
+  const r = v => 6 + 22 * Math.sqrt(v / maxRec);
+  const g = svg("svg", { viewBox: `0 0 ${W} ${H}`, height: H, role: "img", "aria-label": "Operadoras por tempo de resposta e reabertura" }, box);
+  for (const t of ty) {
+    svg("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), stroke: css("--grid") }, g);
+    svg("text", { x: m.l - 8, y: y(t) + 4, "text-anchor": "end", class: "num" }, g).textContent = nf0.format(t) + "%";
+  }
+  for (const t of tx) svg("text", { x: x(t), y: H - 14, "text-anchor": "middle", class: "num" }, g).textContent = nf0.format(t);
+  svg("text", { x: W - m.r, y: H - 1, "text-anchor": "end" }, g).textContent = "tempo médio de resposta (dias) →";
+  // linhas de média: dividem os quadrantes
+  svg("line", { x1: x(media.tempo), x2: x(media.tempo), y1: m.t, y2: H - m.b, stroke: css("--axis") }, g);
+  svg("line", { x1: m.l, x2: W - m.r, y1: y(media.reab), y2: y(media.reab), stroke: css("--axis") }, g);
+  svg("text", { x: W - m.r - 4, y: m.t + 10, "text-anchor": "end" }, g).textContent = "lenta e reabre mais";
+  svg("text", { x: m.l + 6, y: H - m.b - 6 }, g).textContent = "rápida e resolve de primeira";
+  lista.sort((a, b) => b.k.reclamacoes - a.k.reclamacoes);
+  const caixas = [], bolhas = [];
+  for (const d of lista) {
+    const sel = ESTADO.operadora === d.o, apagado = ESTADO.operadora >= 0 && !sel;
+    const cx = x(d.k.tempo), cy = y(d.k.reabertura), rr = r(d.k.reclamacoes);
+    bolhas.push({ d, sel, apagado, cx, cy, rr });
+    svg("circle", { cx, cy, r: rr, fill: css("--s1"), "fill-opacity": apagado ? 0.18 : 0.55,
+      stroke: sel ? css("--ink") : css("--surface"), "stroke-width": 2 }, g);
+    caixas.push([cx - rr * 0.7, cy - rr * 0.7, cx + rr * 0.7, cy + rr * 0.7]);   // miolo da bolha é obstáculo
+  }
+  for (const { d, sel, apagado, cx, cy, rr } of bolhas) {
+    const w = d.nome.length * 6.6 + 4;
+    const opcoes = [
+      { x: cx + rr + 5, y: cy + 4, a: "start", c: [cx + rr + 5, cy - 8, cx + rr + 5 + w, cy + 6] },
+      { x: cx - rr - 5, y: cy + 4, a: "end", c: [cx - rr - 5 - w, cy - 8, cx - rr - 5, cy + 6] },
+      { x: cx, y: cy - rr - 6, a: "middle", c: [cx - w / 2, cy - rr - 18, cx + w / 2, cy - rr - 4] },
+      { x: cx, y: cy + rr + 14, a: "middle", c: [cx - w / 2, cy + rr + 2, cx + w / 2, cy + rr + 16] },
+    ];
+    const cabe = o => o.c[0] >= m.l && o.c[2] <= W && o.c[1] >= 0 && o.c[3] <= H - m.b + 4;
+    const proprio = [cx - rr * 0.7, cy - rr * 0.7, cx + rr * 0.7, cy + rr * 0.7];
+    const livre = o => !caixas.some(k => k !== proprio && !(o.c[2] < k[0] || o.c[0] > k[2] || o.c[3] < k[1] || o.c[1] > k[3]));
+    const pos = opcoes.find(o => cabe(o) && livre(o)) || opcoes.find(cabe) || opcoes[0];
+    caixas.push(pos.c);
+    const lab = svg("text", { x: pos.x, y: pos.y, "text-anchor": pos.a, "font-weight": 600,
+      stroke: css("--surface"), "stroke-width": 3, "paint-order": "stroke" }, g);
+    lab.textContent = d.nome; lab.style.fill = apagado ? css("--muted") : css("--ink");
+  }
+  for (const { d, sel, cx, cy, rr } of bolhas) {
+    const alvo = svg("circle", { cx, cy, r: Math.max(rr, 12), fill: "transparent", tabindex: 0, style: "cursor:pointer" }, g);
+    alvo.addEventListener("pointermove", ev => mostrarTip(ev, d.nome, [
+      { nome: "Reclamações", valor: fmt.int(d.k.reclamacoes) },
+      { nome: "Participação", valor: fmt.pct(100 * d.k.reclamacoes / totalRec) },
+      { nome: "Tempo médio de resposta", valor: `${fmt.d1(d.k.tempo)} dias` },
+      { nome: "Reabertura", valor: fmt.pct(d.k.reabertura) },
+      { nome: "Respondidas no prazo", valor: fmt.pct(d.k.sla) },
+      { nome: "Nota média", valor: fmt.d2(d.k.nota) },
+    ]));
+    alvo.addEventListener("pointerleave", esconderTip);
+    alvo.addEventListener("click", () => { ESTADO.operadora = sel ? -1 : d.o; renderizar(); });
+  }
+  return lista.map(d => ({ ...d, media }));
+}
+
+/* ---------- 4.4 Assuntos (barras) ---------- */
+function renderAssuntos(per) {
+  const cub = D.cubo_assunto.linhas, acc = new Map(); let total = 0, totalReab = 0;
+  for (const r of cub) {   // [mes, servico, operadora, assunto, reclamacoes, reabertas, avaliadas, resolvidas]
+    if (!per.atual.has(r[0])) continue;
+    if (ESTADO.servico >= 0 && r[1] !== ESTADO.servico) continue;
+    if (ESTADO.operadora >= 0 && r[2] !== ESTADO.operadora) continue;
+    const a = acc.get(r[3]) || [0, 0, 0, 0]; a[0] += r[4]; a[1] += r[5]; a[2] += r[6]; a[3] += r[7]; acc.set(r[3], a);
+    total += r[4]; totalReab += r[5];
+  }
+  el("subAssuntos").textContent = `Participação no volume e taxa de reabertura por assunto · ${per.rotulo}` +
+    (ufsSelecionadas() ? " · visão Brasil (este cubo não abre por UF)" : "");
+  const mediaReab = total ? 100 * totalReab / total : 0;
+  let lista = [...acc].map(([i, a]) => ({ nome: D.dimensoes.assuntos[i], rec: a[0], reab: a[0] ? 100 * a[1] / a[0] : 0,
+    excesso: a[0] * Math.max(0, (a[1] / a[0]) - totalReab / total) })).sort((a, b) => b.rec - a.rec);
+  const top = lista.slice(0, 8), resto = lista.slice(8);
+  if (resto.length) {
+    const rec = resto.reduce((s, d) => s + d.rec, 0), reabs = resto.reduce((s, d) => s + d.reab * d.rec / 100, 0);
+    top.push({ nome: `Outros (${resto.length})`, rec, reab: rec ? 100 * reabs / rec : 0, excesso: 0, outros: true });
+  }
+  const box = el("gAssuntos"); box.replaceChildren();
+  const max = Math.max(...top.map(d => d.rec), 1);
+  const cab = document.createElement("div"); cab.className = "barra-linha muted";
+  cab.style.fontSize = "11px"; cab.append(texto("span", "Assunto"), texto("span", "volume"), texto("span", "% vol."), texto("span", "reabertura"));
+  cab.children[2].style.textAlign = "right"; cab.children[3].style.textAlign = "right"; box.appendChild(cab);
+  for (const d of top) {
+    const linha = document.createElement("div"); linha.className = "barra-linha";
+    const rot = texto("span", d.nome, "rot"); rot.title = d.nome;
+    const trilho = document.createElement("div"); trilho.className = "barra-trilho";
+    const p = document.createElement("div"); p.className = "barra-preench"; p.style.width = (100 * d.rec / max) + "%";
+    if (d.outros) p.style.background = css("--prev");
+    trilho.appendChild(p);
+    const val = document.createElement("span"); val.className = "val"; val.appendChild(texto("b", fmt.pct(100 * d.rec / total)));
+    const r = texto("span", fmt.pct(d.reab), "val");
+    if (d.reab > mediaReab + 1) { r.classList.add("marca-acima"); r.textContent = "▲ " + r.textContent; }
+    linha.append(rot, trilho, val, r);
+    linha.addEventListener("pointermove", ev => mostrarTip(ev, d.nome, [
+      { nome: "Reclamações", valor: fmt.int(d.rec) }, { nome: "% do volume", valor: fmt.pct(100 * d.rec / total) },
+      { nome: "Reabertura", valor: fmt.pct(d.reab) }, { nome: "Média geral de reabertura", valor: fmt.pct(mediaReab) }]));
+    linha.addEventListener("pointerleave", esconderTip);
+    box.appendChild(linha);
+  }
+  const leg = texto("p", `▲ = reabertura acima da média do recorte (${fmt.pct(mediaReab)}).`, "muted");
+  leg.style.cssText = "font-size:11.5px;margin:8px 0 0"; box.appendChild(leg);
+  return { lista, mediaReab, total };
+}
+
+/* ---------- 4.5 Tabela de medidas ---------- */
+const COLUNAS = [
+  { id: "reclamacoes", rot: "Reclamações", sub: "soma", f: fmt.int },
+  { id: "anterior", rot: "Mesmo período", sub: "ano anterior", f: fmt.int },
+  { id: "varPct", rot: "Var. %", sub: "ano a ano", f: v => v == null ? "—" : (v > 0 ? "+" : "") + nf1.format(v) + "%" },
+  { id: "part", rot: "Part. %", sub: "do recorte", f: fmt.pct },
+  { id: "mediaMensal", rot: "Média", sub: "mensal", f: fmt.int },
+  { id: "mm3", rot: "Média móvel", sub: "últ. 3 meses", f: fmt.int },
+  { id: "spark", rot: "Tendência", sub: "mês a mês", f: null },
+  { id: "tempo", rot: "Tempo resp.", sub: "dias", f: fmt.d1 },
+  { id: "sla", rot: "No prazo", sub: "%", f: fmt.pct },
+  { id: "reabertura", rot: "Reabertura", sub: "%", f: fmt.pct },
+  { id: "resolvidas", rot: "Resolvidas", sub: "% avaliadas", f: fmt.pct },
+  { id: "nota", rot: "Nota", sub: "1 a 5", f: fmt.d2 },
+  { id: "por100k", rot: "Por 100 mil", sub: "hab.", f: fmt.d1, so: ["uf", "regiao"] },
+];
+let LINHAS_TABELA = [];
+function renderTabela(per) {
+  document.querySelectorAll("[data-agrupar]").forEach(b => b.setAttribute("aria-pressed", b.dataset.agrupar === ESTADO.agrupar));
+  const ag = ESTADO.agrupar;
+  const chave = { operadora: r => r[3], servico: r => r[2], uf: r => r[1], regiao: r => UFS[r[1]].regiao }[ag];
+  const nomeDe = { operadora: k => D.dimensoes.operadoras[k], servico: k => D.dimensoes.servicos[k],
+                   uf: k => `${UFS[k].sigla} · ${UFS[k].nome}`, regiao: k => k }[ag];
+  const ignorar = { [ag === "regiao" ? "uf" : ag]: false };
+  // série mensal de cada grupo (para média móvel e sparkline)
+  const mensal = new Map(), f = filtro(), mesesAtual = [...per.atual].sort((a, b) => a - b);
+  for (const r of D.cubo.linhas) {
+    if (!per.atual.has(r[0]) || !f(r)) continue;
+    const k = chave(r); let s = mensal.get(k); if (!s) { s = new Map(); mensal.set(k, s); }
+    s.set(r[0], (s.get(r[0]) || 0) + r[4 + IM.reclamacoes]);
+  }
+  const grupos = agregar(chave, ignorar);
+  let total = 0; for (const [, g] of grupos) total += g.atual[IM.reclamacoes];
+  const pops = k => ag === "uf" ? new Set([k]) : ag === "regiao" ? new Set(UFS.filter(u => u.regiao === k).map(u => u.i)) : null;
+  LINHAS_TABELA = [...grupos].filter(([, g]) => g.atual[IM.reclamacoes] > 0).map(([k, g]) => {
+    const a = indicadores(g.atual, ["uf", "regiao"].includes(ag) ? populacao(ESTADO.ano, pops(k)) : null);
+    const ant = g.anterior[IM.reclamacoes];
+    const serie = mesesAtual.map(i => (mensal.get(k) || new Map()).get(i) || 0);
+    const ult3 = serie.slice(-3);
+    return { nome: nomeDe(k), ...a, anterior: per.temComparacao ? ant : null,
+             varPct: per.temComparacao && ant ? 100 * (a.reclamacoes / ant - 1) : null,
+             part: total ? 100 * a.reclamacoes / total : null,
+             mediaMensal: a.reclamacoes / Math.max(1, mesesAtual.length),
+             mm3: ult3.length === 3 ? ult3.reduce((s, v) => s + v, 0) / 3 : null, serie };
+  }).filter(l => !(ag === "uf" && l.nome.startsWith("NI")) && l.nome !== "Não informado");
+  const { col, dir } = ESTADO.ordem;
+  LINHAS_TABELA.sort((a, b) => ((a[col] ?? -Infinity) > (b[col] ?? -Infinity) ? 1 : -1) * dir);
+
+  const cols = COLUNAS.filter(c => !c.so || c.so.includes(ag));
+  const t = el("tabela"); t.replaceChildren();
+  const thead = t.createTHead(), hr = thead.insertRow();
+  const th0 = document.createElement("th"); th0.textContent = { operadora: "Operadora", servico: "Serviço", uf: "UF", regiao: "Região" }[ag]; hr.appendChild(th0);
+  for (const c of cols) {
+    const th = document.createElement("th"); th.scope = "col";
+    if (c.f) {
+      const b = document.createElement("button"); b.type = "button";
+      b.append(c.rot, col === c.id ? (dir < 0 ? " ↓" : " ↑") : "");
+      b.onclick = () => { ESTADO.ordem = { col: c.id, dir: col === c.id ? -dir : -1 }; renderizar(); };
+      th.append(b);
+    } else th.append(c.rot);
+    th.appendChild(document.createElement("br")); th.appendChild(texto("span", c.sub)).style.fontWeight = 400;
+    if (col === c.id) th.setAttribute("aria-sort", dir < 0 ? "descending" : "ascending");
+    hr.appendChild(th);
+  }
+  const tb = t.createTBody();
+  const kVar = { delta: "pct", melhor: -1 };
+  for (const l of LINHAS_TABELA) {
+    const tr = tb.insertRow(); tr.insertCell().textContent = l.nome;
+    for (const c of cols) {
+      const td = tr.insertCell();
+      if (c.id === "spark") { td.appendChild(sparkline(l.serie)); continue; }
+      td.textContent = c.f(l[c.id]);
+      if (c.id === "varPct" && l.varPct != null) {
+        const v = variacao(kVar, l.reclamacoes, l.anterior);
+        if (v) { td.style.color = v.classe === "bom" ? css("--good") : v.classe === "ruim" ? css("--bad") : css("--muted"); td.textContent = `${v.seta} ${td.textContent}`; }
+      }
+    }
+  }
+  // linha de total = o recorte inteiro (bate com os cartões de KPI)
+  const tot = { atual: novoAcc(), anterior: novoAcc() };
+  for (const [, g] of grupos) for (const lado of ["atual", "anterior"]) for (let k = 0; k < M.length; k++) tot[lado][k] += g[lado][k];
+  const kt = indicadores(tot.atual, ["uf", "regiao"].includes(ag) ? populacao(ESTADO.ano, ufsSelecionadas()) : null);
+  const serieTot = mesesAtual.map(i => [...mensal.values()].reduce((s, m) => s + (m.get(i) || 0), 0));
+  const tf = t.createTFoot().insertRow(); tf.insertCell().textContent = "Total do recorte";
+  const antTot = tot.anterior[IM.reclamacoes];
+  const valTot = { ...kt, anterior: per.temComparacao ? antTot : null, varPct: per.temComparacao && antTot ? 100 * (kt.reclamacoes / antTot - 1) : null,
+    part: 100, mediaMensal: kt.reclamacoes / Math.max(1, mesesAtual.length),
+    mm3: serieTot.length >= 3 ? serieTot.slice(-3).reduce((s, v) => s + v, 0) / 3 : null };
+  for (const c of cols) { const td = tf.insertCell(); if (c.id === "spark") td.appendChild(sparkline(serieTot)); else td.textContent = c.f(valTot[c.id]); }
+  el("subTabela").textContent = `${recorteTexto()} · ${per.rotulo}` + (per.temComparacao ? ` vs ${per.rotuloAnt}` : "") +
+    ". Clique no título de uma coluna para ordenar.";
+}
+function sparkline(serie) {
+  const W = 84, H = 22, s = svg("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, "aria-hidden": "true" });
+  s.style.display = "inline-block"; s.style.verticalAlign = "middle";
+  const max = Math.max(...serie, 1), min = Math.min(...serie);
+  const x = i => 2 + i * (W - 4) / Math.max(1, serie.length - 1), y = v => H - 3 - (H - 6) * (max === min ? 0.5 : (v - min) / (max - min));
+  svg("path", { d: serie.map((v, i) => `${i ? "L" : "M"}${x(i)},${y(v)}`).join(""), fill: "none", stroke: css("--s1"), "stroke-width": 1.5 }, s);
+  if (serie.length) svg("circle", { cx: x(serie.length - 1), cy: y(serie[serie.length - 1]), r: 2.2, fill: css("--s1") }, s);
+  return s;
+}
+function baixarCsv() {
+  const cols = COLUNAS.filter(c => c.f && (!c.so || c.so.includes(ESTADO.agrupar)));
+  const num = v => v == null ? "" : String(Math.round(v * 100) / 100).replace(".", ",");
+  const linhas = [["grupo", ...cols.map(c => `${c.rot} (${c.sub})`)].join(";"),
+    ...LINHAS_TABELA.map(l => [`"${String(l.nome).replace(/"/g, '""')}"`, ...cols.map(c => num(l[c.id]))].join(";"))];
+  const blob = new Blob(["﻿" + linhas.join("\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = `radar_atendimento_${ESTADO.agrupar}_${ESTADO.ano}.csv`; a.click(); URL.revokeObjectURL(a.href);
+}
+
+/* ---------- 4.6 Canal de entrada ---------- */
+function renderCanal(per) {
+  const cartao = el("cartaoCanal");
+  if (!D.meta.tem_canal) { cartao.hidden = true; return; }
+  const acc = new Map(); let total = 0;
+  for (const r of D.cubo_canal.linhas) {   // [mes, servico, operadora, canal, solicitacoes]
+    if (!per.atual.has(r[0])) continue;
+    if (ESTADO.servico >= 0 && r[1] !== ESTADO.servico) continue;
+    if (ESTADO.operadora >= 0 && r[2] !== ESTADO.operadora) continue;
+    acc.set(r[3], (acc.get(r[3]) || 0) + r[4]); total += r[4];
+  }
+  el("subCanal").textContent = `Canal usado para registrar a reclamação na Anatel · ${per.rotulo}` + (ufsSelecionadas() ? " · visão Brasil" : "");
+  const box = el("gCanal"); box.replaceChildren();
+  const lista = [...acc].sort((a, b) => b[1] - a[1]), max = Math.max(1, ...lista.map(d => d[1]));
+  for (const [c, v] of lista.slice(0, 7)) {
+    const linha = document.createElement("div"); linha.className = "barra-linha";
+    linha.style.gridTemplateColumns = "minmax(90px,1fr) minmax(0,1.6fr) 56px";
+    const trilho = document.createElement("div"); trilho.className = "barra-trilho";
+    const p = document.createElement("div"); p.className = "barra-preench"; p.style.width = (100 * v / max) + "%"; trilho.appendChild(p);
+    const val = texto("span", fmt.pct(100 * v / total), "val");
+    linha.append(texto("span", D.dimensoes.canais[c], "rot"), trilho, val);
+    linha.addEventListener("pointermove", ev => mostrarTip(ev, D.dimensoes.canais[c], [{ nome: "Solicitações", valor: fmt.int(v) }, { nome: "Participação", valor: fmt.pct(100 * v / total) }]));
+    linha.addEventListener("pointerleave", esconderTip);
+    box.appendChild(linha);
+  }
+}
+
+/* ---------- 4.7 Resumo executivo (texto gerado a partir dos dados) ---------- */
+function renderResumo(per, k, kAnt, ops, assuntos) {
+  const box = el("resumo"); box.replaceChildren();
+  const ICONES = {   // ícones fixos (não vêm de dados), por isso podem ir como SVG direto
+    mudou: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>',
+    doi: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></svg>',
+    agir: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',
+  };
+  const TIPOS = { "O que mudou": "mudou", "Onde dói": "doi", "Onde agir primeiro": "agir" };
+  const cartao = (rotulo, partes) => {
+    const c = document.createElement("article"); c.className = `cartao insight insight-${TIPOS[rotulo]}`;
+    const r = document.createElement("div"); r.className = "rotulo";
+    const ic = document.createElement("span"); ic.className = "icone"; ic.innerHTML = ICONES[TIPOS[rotulo]];
+    r.append(ic, rotulo); c.appendChild(r);
+    const p = document.createElement("p");
+    for (const parte of partes) p.append(typeof parte === "string" ? parte : texto("strong", parte.b));
+    c.appendChild(p); box.appendChild(c);
+  };
+  // 1. O que mudou
+  if (per.temComparacao && kAnt.reclamacoes) {
+    const v = 100 * (k.reclamacoes / kAnt.reclamacoes - 1);
+    const motor = ops.length > 1 ? ops.map(o => ({ nome: o.nome, d: o.k.reclamacoes - o.kAnt.reclamacoes }))
+      .sort((a, b) => (v >= 0 ? b.d - a.d : a.d - b.d))[0] : null;
+    const partes = [`Em ${per.rotulo}, foram `, { b: fmt.int(k.reclamacoes) }, " reclamações: ",
+      { b: `${v >= 0 ? "+" : "−"}${nf1.format(Math.abs(v))}%` }, ` em relação ao mesmo período de ${ESTADO.ano - 1}. `];
+    if (motor && ESTADO.operadora < 0 && Math.sign(motor.d) === Math.sign(v) && motor.d !== 0)
+      partes.push(`A maior contribuição veio de `, { b: motor.nome }, ` (${motor.d > 0 ? "+" : "−"}${nf0.format(Math.abs(motor.d))} reclamações).`);
+    const dt = variacao(KPIS[2], k.tempo, kAnt.tempo);
+    if (dt) partes.push(` O tempo médio de resposta ficou em ${fmt.d1(k.tempo)} dias (${dt.texto}).`);
+    cartao("O que mudou", partes);
+  } else {
+    cartao("O que mudou", [`Em ${per.rotulo}, foram `, { b: fmt.int(k.reclamacoes) },
+      ` reclamações. Não há ano anterior na série para comparar o mesmo período.`]);
+  }
+  // 2. Onde dói. Primeiro testa o "paradoxo": prazo estável, mas resolução caindo.
+  //    Se não houver paradoxo, fala da reabertura (termômetro de FCR).
+  const totalOps = ops.reduce((s, x) => s + x.k.reclamacoes, 0);
+  const relevantes = ops.filter(o => o.k.reclamacoes >= 0.02 * totalOps && ESTADO.operadora < 0);
+  const dSla = per.temComparacao ? variacao(KPIS[3], k.sla, kAnt.sla) : null;
+  const dRes = per.temComparacao ? variacao(KPIS[5], k.resolvidas, kAnt.resolvidas) : null;
+  if (dSla && dRes && dRes.valor <= -2 && Math.abs(dSla.valor) < 2) {
+    const quedas = relevantes.filter(o => o.k.resolvidas != null && o.kAnt.resolvidas != null)
+      .map(o => ({ nome: o.nome, d: o.k.resolvidas - o.kAnt.resolvidas })).sort((a, b) => a.d - b.d);
+    const partes = [`O prazo está sendo cumprido: `, { b: fmt.pct(k.sla) }, ` respondidas em até ${D.meta.sla_dias} dias. ` +
+      `Mas a resolução caiu `, { b: `${nf1.format(-dRes.valor)} p.p.` }, ` (${fmt.pct(kAnt.resolvidas)} → ${fmt.pct(k.resolvidas)})` +
+      (kAnt.nota != null ? ` e a nota foi de ${fmt.d2(kAnt.nota)} para ${fmt.d2(k.nota)}` : "") +
+      `: responder no prazo não está significando resolver.`];
+    if (quedas.length && quedas[0].d < 0) partes.push(` A maior queda foi na `, { b: quedas[0].nome }, ` (−${nf1.format(-quedas[0].d)} p.p.).`);
+    cartao("Onde dói", partes);
+  } else {
+  const pior = relevantes.length > 1 ? [...relevantes].sort((a, b) => b.k.reabertura - a.k.reabertura)[0] : null;
+  const dr = per.temComparacao ? variacao(KPIS[4], k.reabertura, kAnt.reabertura) : null;
+  const p2 = [`A taxa de reabertura, nosso termômetro de resolução no primeiro contato, está em `, { b: fmt.pct(k.reabertura) },
+    dr ? ` (${dr.texto} vs ${ESTADO.ano - 1}, ${dr.palavra}). ` : ". "];
+  if (pior && ESTADO.operadora < 0) p2.push(`Entre as operadoras relevantes, `, { b: pior.nome }, ` tem a maior: ${fmt.pct(pior.k.reabertura)}, ` +
+    `${nf1.format(pior.k.reabertura - k.reabertura)} p.p. acima da média.`);
+  else p2.push(`${fmt.pct(k.sla)} das reclamações foram respondidas em até ${D.meta.sla_dias} dias.`);
+  cartao("Onde dói", p2);
+  }
+  // 3. Onde agir primeiro: assunto com mais reaberturas "em excesso" (impacto, não só taxa)
+  const alvo = [...assuntos.lista].sort((a, b) => b.excesso - a.excesso)[0];
+  if (alvo && alvo.excesso > 0) {
+    cartao("Onde agir primeiro", [{ b: alvo.nome }, ` representa ${fmt.pct(100 * alvo.rec / assuntos.total)} do volume e reabre ${fmt.pct(alvo.reab)}. ` +
+      `Trazer esse assunto para a média de reabertura (${fmt.pct(assuntos.mediaReab)}) evitaria cerca de `, { b: nf0.format(alvo.excesso) },
+      ` reaberturas no período. Priorizar por impacto (volume × excesso), e não só pela taxa, é o que dá mais retorno para a operação.`]);
+  } else {
+    cartao("Onde agir primeiro", ["Nenhum assunto tem reabertura relevante acima da média neste recorte."]);
+  }
+}
+
+/* ---------- 4.8 Qualidade e atualizações ---------- */
+function renderQualidade() {
+  const q = window.QUALIDADE, ex = window.EXECUCOES || [];
+  const res = el("resumoQualidade"), lista = el("checks"); res.replaceChildren(); lista.replaceChildren();
+  if (!q) { lista.textContent = "Relatório de qualidade não encontrado."; return; }
+  for (const s of ["OK", "ALERTA", "ERRO", "INFO"]) if (q.resumo[s]) res.appendChild(texto("span", `${q.resumo[s]} ${s}`, `status ${s}`));
+  const ordem = { ERRO: 0, ALERTA: 1, INFO: 2, OK: 3 };
+  const aprovadas = document.createElement("details"), resumoOk = document.createElement("summary");
+  const caixaOk = document.createElement("div"); caixaOk.className = "checks";
+  resumoOk.textContent = `Ver as ${q.resumo.OK} checagens aprovadas`; aprovadas.append(resumoOk, caixaOk);
+  for (const c of [...q.checks].sort((a, b) => ordem[a.status] - ordem[b.status])) {
+    const linha = document.createElement("div"); linha.className = "check";
+    const meio = document.createElement("div");
+    meio.append(texto("div", c.titulo), texto("div", `${c.regra}${c.detalhe ? " · " + c.detalhe.join(" | ") : ""}`, "det"));
+    const qtd = c.percentual != null ? `${fmt.int(c.quantidade)} (${nf2.format(c.percentual)}%)` : fmt.int(c.quantidade);
+    linha.append(texto("span", c.status, `status ${c.status}`), meio, texto("span", qtd, "num muted"));
+    (c.status === "OK" ? caixaOk : lista).appendChild(linha);
+  }
+  if (q.resumo.OK) lista.appendChild(aprovadas);
+  const t = el("execucoes"); t.replaceChildren();
+  const h = t.createTHead().insertRow();
+  ["Quando", "Status", "Duração", "Dados até", "Linhas na base"].forEach(x => { const th = document.createElement("th"); th.textContent = x; h.appendChild(th); });
+  const tb = t.createTBody();
+  for (const e of ex.slice(0, 10)) {
+    const r = tb.insertRow();
+    r.insertCell().textContent = new Date(e.inicio).toLocaleString("pt-BR");
+    r.insertCell().appendChild(texto("span", e.status.replace(/_/g, " "), `status ${e.status === "falhou" ? "ERRO" : e.status === "sucesso" ? "OK" : "ALERTA"}`));
+    r.insertCell().textContent = `${nf1.format(e.duracao_s)} s`;
+    r.insertCell().textContent = e.competencia_mais_recente || "—";
+    r.insertCell().textContent = e.linhas_base_analise ? fmt.int(e.linhas_base_analise) : "—";
+  }
+}
+
+function renderMetodologia() {
+  const sla = D.meta.sla_dias;
+  const defs = [
+    ["Reclamações", "Registros do tipo \"Reclamação\" abertos na Anatel no período, pela data de abertura. Cada reabertura entra como um registro novo (validado contra a base de registros da Anatel: diferença em torno de 2%)."],
+    ["Mesmo período do ano anterior", "A comparação usa exatamente os mesmos meses do ano anterior. Se o ano atual vai até setembro, compara com janeiro a setembro do ano passado, nunca com o ano cheio."],
+    ["Maturação", `Reclamações abertas nos últimos dias ainda estão em andamento quando a Anatel gera o arquivo. Por isso o mês da extração e o anterior ficam fora (${D.meta.meses_maturacao} mês de maturação).`],
+    ["Tempo de resposta", "Média ponderada de dias até a resposta da operadora: soma dos dias ÷ reclamações com tempo válido (0 a 365)."],
+    ["Respondidas no prazo", `Reclamações respondidas em até ${sla} dias corridos, o prazo que a Anatel dá às operadoras, ÷ total de reclamações.`],
+    ["Taxa de reabertura", "Registros que são reaberturas ÷ total de registros. Reabrir significa que a primeira resposta não resolveu: é o equivalente público do FCR (resolução no primeiro contato) de uma central de atendimento."],
+    ["Resolvidas", "Reclamações que o consumidor marcou como resolvidas ÷ reclamações avaliadas. Quem não avalia fica fora do cálculo (na Anatel, a não avaliação é classificada como resolvida automaticamente, o que inflaria o número)."],
+    ["Por 100 mil habitantes", "Reclamações do período ÷ população estimada da UF (IBGE, tabela 6579) × 100.000. Permite comparar estados de tamanhos diferentes."],
+    ["Operadoras \"OUTRAS\"", `Prestadoras com menos de ${nf1.format(100 * D.meta.min_participacao_operadora)}% do volume total são agrupadas, para a leitura não se perder na cauda longa.`],
+  ];
+  const dl = el("definicoes"); dl.replaceChildren();
+  for (const [t, d] of defs) dl.append(texto("dt", t), texto("dd", d));
+  const f = el("fontes"); f.replaceChildren();
+  D.meta.fontes.forEach((x, i) => { const a = document.createElement("a"); a.href = x.url; a.textContent = x.nome; a.target = "_blank"; a.rel = "noopener"; f.append(i ? " · " : "", a); });
+}
+</script>
+</body>
+</html>

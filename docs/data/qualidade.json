@@ -1,0 +1,232 @@
+{
+ "gerado_em": "2026-11-12T16:01:10",
+ "totais": {
+  "linhas_prata": 12160267,
+  "linhas_base_analise": 3629042,
+  "linhas_nos_arquivos": {
+   "atendimento": 12160267,
+   "registradas": 8410179
+  }
+ },
+ "resumo": {
+  "OK": 12,
+  "ALERTA": 1,
+  "ERRO": 0,
+  "INFO": 3
+ },
+ "aprovado": true,
+ "checks": [
+  {
+   "id": "diferenca_reconciliacao",
+   "titulo": "Reconciliação arquivo x banco (atendimento)",
+   "regra": "Linhas no arquivo = linhas carregadas",
+   "quantidade": 0,
+   "percentual": 0.0,
+   "status": "OK",
+   "detalhe": [
+    "12.160.267 no arquivo; 12.160.267 carregadas"
+   ]
+  },
+  {
+   "id": "diferenca_reconciliacao",
+   "titulo": "Reconciliação arquivo x banco (registradas)",
+   "regra": "Linhas no arquivo = linhas carregadas",
+   "quantidade": 0,
+   "percentual": 0.0,
+   "status": "OK",
+   "detalhe": [
+    "8.410.179 no arquivo; 8.410.179 carregadas"
+   ]
+  },
+  {
+   "id": "linhas_identicas",
+   "titulo": "Linhas idênticas (mantidas)",
+   "regra": "Sem ID na fonte: não dá para afirmar que são duplicadas",
+   "quantidade": 878480,
+   "percentual": 24.207,
+   "status": "INFO",
+   "detalhe": null
+  },
+  {
+   "id": "datas_invalidas",
+   "titulo": "Data de abertura inválida",
+   "regra": "R2",
+   "quantidade": 0,
+   "percentual": 0.0,
+   "status": "OK",
+   "detalhe": null
+  },
+  {
+   "id": "uf_invalida",
+   "titulo": "UF ausente ou inválida",
+   "regra": "R3",
+   "quantidade": 0,
+   "percentual": 0.0,
+   "status": "OK",
+   "detalhe": null
+  },
+  {
+   "id": "tempo_resposta_invalido",
+   "titulo": "Tempo de resposta inválido",
+   "regra": "R4",
+   "quantidade": 0,
+   "percentual": 0.0,
+   "status": "OK",
+   "detalhe": null
+  },
+  {
+   "id": "nota_invalida",
+   "titulo": "Nota fora de 1 a 5",
+   "regra": "R6",
+   "quantidade": 0,
+   "percentual": 0.0,
+   "status": "OK",
+   "detalhe": null
+  },
+  {
+   "id": "respondida_sem_data",
+   "titulo": "Respondida sem data de resposta",
+   "regra": "Coerência",
+   "quantidade": 0,
+   "percentual": 0.0,
+   "status": "OK",
+   "detalhe": null
+  },
+  {
+   "id": "resposta_antes_abertura",
+   "titulo": "Resposta antes da abertura",
+   "regra": "Coerência",
+   "quantidade": 6316,
+   "percentual": 0.174,
+   "status": "ALERTA",
+   "detalhe": null
+  },
+  {
+   "id": "tempo_inconsistente",
+   "titulo": "Tempo de resposta ≠ diferença entre as datas",
+   "regra": "Informativo: usamos o campo oficial de tempo",
+   "quantidade": 414902,
+   "percentual": 11.433,
+   "status": "INFO",
+   "detalhe": null
+  },
+  {
+   "id": "meses_faltando",
+   "titulo": "Meses sem dados na série",
+   "regra": "Série mensal completa",
+   "quantidade": 0,
+   "percentual": null,
+   "status": "OK",
+   "detalhe": null
+  },
+  {
+   "id": "volume_anomalo",
+   "titulo": "Volume mensal fora do padrão",
+   "regra": "±40% da mediana mensal (109.517)",
+   "quantidade": 0,
+   "percentual": null,
+   "status": "OK",
+   "detalhe": null
+  },
+  {
+   "id": "cobertura_populacao",
+   "titulo": "UF/ano sem população do IBGE",
+   "regra": "R10",
+   "quantidade": 0,
+   "percentual": null,
+   "status": "OK",
+   "detalhe": null
+  },
+  {
+   "id": "divergencia_entre_fontes",
+   "titulo": "Volume: base de atendimento x base de registros (novas + reabertas)",
+   "regra": "Média da diferença mensal absoluta",
+   "quantidade": 33,
+   "percentual": 2.24,
+   "status": "OK",
+   "detalhe": [
+    "2025-11: -2.7%",
+    "2025-12: -2.6%",
+    "2026-01: -2.5%"
+   ]
+  },
+  {
+   "id": "fora_da_base",
+   "titulo": "Fora da base de análise",
+   "regra": "R7",
+   "quantidade": 8531225,
+   "percentual": 70.157,
+   "status": "INFO",
+   "detalhe": [
+    "outros tipos de atendimento: 0",
+    "antes de 2024-01: 8.442.554",
+    "meses ainda em maturação: 88.671"
+   ]
+  },
+  {
+   "id": "contrato_dados",
+   "titulo": "Colunas obrigatórias presentes",
+   "regra": "Layout esperado da Anatel",
+   "quantidade": 2,
+   "percentual": null,
+   "status": "OK",
+   "detalhe": null
+  }
+ ],
+ "reconciliacao": [
+  {
+   "fonte": "atendimento",
+   "arquivo": "anatel_atendimento.zip",
+   "codificacao": "utf-8",
+   "colunas_originais": [
+    "TIPO_ATENDIMENTO",
+    "SERVICO",
+    "ASSUNTO",
+    "UF",
+    "PRESTADORA",
+    "DATA_ABERTURA",
+    "DATA_RESPOSTA",
+    "RESPONDIDA",
+    "REABERTA",
+    "PrazoResposta",
+    "ID_SITUACAO",
+    "SITUACAO",
+    "RESOLVIDA",
+    "NOTA_CONSUMIDOR",
+    "DATA_FINALIZACAO",
+    "DETALHAMENTO",
+    "ENTIDADEANDAMENTO"
+   ],
+   "linhas_no_arquivo": 12160267,
+   "linhas_carregadas": 12160267,
+   "diferenca": 0
+  },
+  {
+   "fonte": "registradas",
+   "arquivo": "anatel_registradas.zip",
+   "codificacao": "utf-8",
+   "colunas_originais": [
+    "DataExtracao",
+    "SOLICITAÇÕES",
+    "Ano",
+    "Mês",
+    "AnoMês",
+    "UF",
+    "Cidade",
+    "CO_MUNICIPIO",
+    "CanalEntrada",
+    "Condição",
+    "TipoAtendimento",
+    "Serviço",
+    "Marca",
+    "Assunto",
+    "Problema",
+    "Linha"
+   ],
+   "linhas_no_arquivo": 8410179,
+   "linhas_carregadas": 8410179,
+   "diferenca": 0
+  }
+ ],
+ "meses_faltando": []
+}

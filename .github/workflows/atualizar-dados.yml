@@ -1,0 +1,68 @@
+# =====================================================================
+# Atualização automática da lâmina
+#
+# Roda sozinho todo dia 15 (a Anatel atualiza os arquivos no começo do mês)
+# e também pode ser disparado na mão pela aba "Actions" do GitHub.
+#
+# Se a checagem de qualidade reprovar, o passo do pipeline falha, NADA é
+# publicado e o GitHub manda e-mail avisando. A lâmina continua no ar com
+# os dados do mês anterior.
+# =====================================================================
+name: Atualizar dados da lâmina
+
+on:
+  schedule:
+    - cron: "17 9 15 * *"     # dia 15 de cada mês, 09:17 UTC (06:17 em Brasília)
+  workflow_dispatch:           # botão "Run workflow" na aba Actions
+
+permissions:
+  contents: write              # precisa gravar os dados novos no repositório
+
+concurrency:
+  group: atualizar-dados
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v6
+
+      - name: Preparar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Testar o pipeline com a amostra sintética
+        run: |
+          python tests/gerar_amostra_sintetica.py
+          python pipeline/executar_pipeline.py --amostra
+
+      - name: Rodar o pipeline com os dados reais
+        run: python pipeline/executar_pipeline.py
+
+      - name: Publicar se algo mudou
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data powerbi/dados dados_referencia
+          if git diff --cached --quiet; then
+            echo "Nenhuma mudança nos dados. Nada a publicar."
+          else
+            git commit -m "dados: atualização automática $(date +'%Y-%m-%d')"
+            git push
+          fi
+
+      - name: Guardar o log da execução
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: log-pipeline
+          path: data/logs/
+          retention-days: 30

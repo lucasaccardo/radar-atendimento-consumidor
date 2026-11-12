@@ -1,0 +1,136 @@
+{
+  "descricao": "Snapshot do catálogo do dados.gov.br (conjunto 'Dados Consumidor.gov.br', MJSP). Usado como contingência se a API do catálogo estiver fora do ar.",
+  "capturado_em": "2026-11-12",
+  "pagina_conjunto": "https://dados.gov.br/dados/conjuntos-dados/reclamacoes-do-consumidor-gov-br1",
+  "dicionario_de_dados": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/90aedbfe-3c91-4c18-86a5-f408d07e7210/download/dicionario-de-dados---consumidorgovbr-v3.pdf",
+  "arquivos": [
+    {
+      "competencia": "2024-01",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/26e179b7-fd16-4a7d-a6a5-69fa1432b698/download/basecompleta2024-01.csv"
+    },
+    {
+      "competencia": "2024-02",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/ab17f12b-7891-490e-8557-1836b07053b4/download/basecompleta2024-02.csv"
+    },
+    {
+      "competencia": "2024-03",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/863a7c94-413f-4943-9317-ba5303d4a852/download/basecompleta2024-03.csv"
+    },
+    {
+      "competencia": "2024-04",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/6669b1b1-9f99-49a6-a0a9-12328e8ea456/download/basecompleta2024-04.csv"
+    },
+    {
+      "competencia": "2024-05",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/ea6a3096-191f-46ad-8a0c-2bd6e67ddcd5/download/basecompleta2024-05.csv"
+    },
+    {
+      "competencia": "2024-06",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/5f9e941d-5550-4e66-97a1-93e7f4f30c49/download/basecompleta2024-06.csv"
+    },
+    {
+      "competencia": "2024-07",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/fdd445df-6f1c-41bd-a62b-7c50b89d8283/download/basecompleta2024-07.csv"
+    },
+    {
+      "competencia": "2024-08",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/6e26190f-5f54-4cbc-a8cd-b2e8d341dc63/download/basecompleta2024-08.csv"
+    },
+    {
+      "competencia": "2024-09",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/3daf237e-b491-493d-b07a-027d7e601583/download/basecompleta2024-09.csv"
+    },
+    {
+      "competencia": "2024-10",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/6d82658e-232e-4891-a2c7-720b7c808ed1/download/basecompleta2024-10.csv"
+    },
+    {
+      "competencia": "2024-11",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/896860e1-d1fa-4f8d-8cfd-5d8f51568503/download/basecompleta2024-11.csv"
+    },
+    {
+      "competencia": "2024-12",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/c99e2bae-36ab-4a08-b372-cd7077de95f4/download/basecompleta2024-12.csv"
+    },
+    {
+      "competencia": "2025-01",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/e1868ec1-7495-46dd-a0c7-75baf162706d/download/basecompleta2025-01.csv"
+    },
+    {
+      "competencia": "2025-02",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/ee8c0bfa-11b6-4d7a-8094-c349b19c43dd/download/basecompleta2025-02.csv"
+    },
+    {
+      "competencia": "2025-03",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/65706bcd-80ab-4231-a7ef-9e329420f001/download/basecompleta2025-03.zip"
+    },
+    {
+      "competencia": "2025-04",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/8f22bdc1-3044-46ee-9dd1-4ace84da28e4/download/basecompleta2025-04.csv"
+    },
+    {
+      "competencia": "2025-05",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/aa5a886f-65a8-4e4d-9de1-b5b2c37d3ebc/download/basecompleta2025-05.csv"
+    },
+    {
+      "competencia": "2025-06",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/670173fb-8333-49c8-8a0a-461ef2f95ded/download/basecompleta2025-06.csv"
+    },
+    {
+      "competencia": "2025-07",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/361f5af2-c725-4426-bb6a-d79a48371399/download/basecompleta2025-07.csv"
+    },
+    {
+      "competencia": "2025-08",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/36338e5f-a0fd-454b-9d8b-851e0c1cafed/download/basecompleta2025-08.csv"
+    },
+    {
+      "competencia": "2025-09",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/2e82ea24-b242-4632-85f2-276095770970/download/basecompleta2025-09.csv"
+    },
+    {
+      "competencia": "2025-10",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/b31eacbd-a15a-4a0c-9716-fb2c23179686/download/basecompleta2025-10.csv"
+    },
+    {
+      "competencia": "2025-11",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/6f658072-75f7-42c2-8271-cbd87a503056/download/basecompleta2025-11.csv"
+    },
+    {
+      "competencia": "2025-12",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/a5e4db97-f2f4-4c96-aff0-209e18d3c8ff/download/basecompleta2025-12.csv"
+    },
+    {
+      "competencia": "2026-01",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv"
+    },
+    {
+      "competencia": "2026-02",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/a9815116-9f80-4b8c-9eb6-a2f1590daf62/download/basecompleta2026-02.csv"
+    },
+    {
+      "competencia": "2026-03",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/0dff3649-252f-4d9e-90f6-6a89181d91fa/download/basecompleta2026-03.csv"
+    },
+    {
+      "competencia": "2026-04",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/a0ca4dfd-5a15-4577-a981-c60fe503c6fe/download/basecompleta2026-04.csv"
+    },
+    {
+      "competencia": "2026-05",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/fb886428-1e96-4b90-a457-ff30f8ed7bbc/download/basecompleta2026-05.csv"
+    },
+    {
+      "competencia": "2026-06",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/c6e4b044-7ad9-4487-a574-665606c69514/download/basecompleta2026-06.csv"
+    },
+    {
+      "competencia": "2026-07",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/2901be43-7b4f-4b6d-b6fc-06abe69f3dd1/download/basecompleta2026-07.csv"
+    },
+    {
+      "competencia": "2026-08",
+      "url": "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/2a959505-976a-4350-bc00-79892ca4f8fc/download/basecompleta2026-08.csv"
+    }
+  ]
+}

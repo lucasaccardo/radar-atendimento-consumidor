@@ -1,0 +1,77 @@
+[
+ {
+  "inicio": "2026-11-12T16:00:31",
+  "modo": "real",
+  "status": "sucesso_com_alertas",
+  "competencia_mais_recente": "2026-09",
+  "fontes_atualizadas": [],
+  "falhas_download": [],
+  "linhas_base_analise": 3629042,
+  "checagens": {
+   "OK": 12,
+   "ALERTA": 1,
+   "ERRO": 0,
+   "INFO": 3
+  },
+  "meses_faltando": [],
+  "fim": "2026-11-12T16:01:11",
+  "duracao_s": 40.0,
+  "etapas": {
+   "extracao_s": 0.0,
+   "transformacao_s": 38.0,
+   "qualidade_s": 0.2,
+   "publicacao_s": 0.5
+  },
+  "log": "pipeline_20261112_160031.log"
+ },
+ {
+  "inicio": "2026-11-12T15:45:15",
+  "modo": "real",
+  "status": "sucesso_com_alertas",
+  "competencia_mais_recente": "2026-09",
+  "fontes_atualizadas": [],
+  "falhas_download": [],
+  "linhas_base_analise": 3629042,
+  "checagens": {
+   "OK": 11,
+   "ALERTA": 2,
+   "ERRO": 0,
+   "INFO": 3
+  },
+  "meses_faltando": [],
+  "fim": "2026-11-12T15:45:58",
+  "duracao_s": 43.5,
+  "etapas": {
+   "extracao_s": 2.2,
+   "transformacao_s": 39.1,
+   "qualidade_s": 0.2,
+   "publicacao_s": 0.6
+  },
+  "log": "pipeline_20261112_154515.log"
+ },
+ {
+  "inicio": "2026-11-12T15:37:22",
+  "modo": "real",
+  "status": "sucesso_com_alertas",
+  "competencia_mais_recente": "2026-09",
+  "fontes_atualizadas": [],
+  "falhas_download": [],
+  "linhas_base_analise": 3629042,
+  "checagens": {
+   "OK": 12,
+   "ALERTA": 1,
+   "ERRO": 0,
+   "INFO": 3
+  },
+  "meses_faltando": [],
+  "fim": "2026-11-12T15:37:58",
+  "duracao_s": 36.3,
+  "etapas": {
+   "extracao_s": 2.5,
+   "transformacao_s": 32.7,
+   "qualidade_s": 0.1,
+   "publicacao_s": 0.3
+  },
+  "log": "pipeline_20261112_153722.log"
+ }
+]

@@ -1,0 +1,23 @@
+# Dados brutos e intermediários: grandes demais para o Git e regeráveis pelo pipeline
+/data/
+/data_amostra/
+docs/data_amostra/
+
+# A amostra sintética é gerada pelo script de teste
+tests/fixtures/anatel_*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Power BI: arquivos temporários de backup
+*.pbix.bak
+~$*
