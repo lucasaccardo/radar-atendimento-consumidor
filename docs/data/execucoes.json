@@ -1,5 +1,46 @@
 [
  {
+  "inicio": "2026-11-12T20:22:16",
+  "modo": "real",
+  "status": "sucesso_com_alertas",
+  "competencia_mais_recente": "2026-09",
+  "fontes_atualizadas": [
+   "atendimento",
+   "registradas"
+  ],
+  "falhas_download": [
+   {
+    "fonte": "ibge_populacao",
+    "erro": "Não foi possível acessar https://servicodados.ibge.gov.br/api/v3/agregados/6579/periodos/2024|2025|2026/variaveis/9324?localidades=N3[all]: HTTPSConnectionPool(host='servicodados.ibge.gov.br', port=443): Max retries exceeded with url: /api/v3/agregados/6579/periodos/2024%7C2025%7C2026/variaveis/9324",
+    "em": "2026-11-12T20:24:58",
+    "usou_versao_anterior": true
+   },
+   {
+    "fonte": "ibge_estados",
+    "erro": "Não foi possível acessar https://servicodados.ibge.gov.br/api/v1/localidades/estados: HTTPSConnectionPool(host='servicodados.ibge.gov.br', port=443): Max retries exceeded with url: /api/v1/localidades/estados (Caused by ConnectTimeoutError(<HTTPSConnection(host='servicodados.ibge.gov.br', port=443) ",
+    "em": "2026-11-12T20:27:28",
+    "usou_versao_anterior": true
+   }
+  ],
+  "linhas_base_analise": 3629042,
+  "checagens": {
+   "OK": 12,
+   "ALERTA": 1,
+   "ERRO": 0,
+   "INFO": 3
+  },
+  "meses_faltando": [],
+  "fim": "2026-11-12T20:28:12",
+  "duracao_s": 355.7,
+  "etapas": {
+   "extracao_s": 312.2,
+   "transformacao_s": 43.0,
+   "qualidade_s": 0.1,
+   "publicacao_s": 0.3
+  },
+  "log": "pipeline_20261112_202216.log"
+ },
+ {
   "inicio": "2026-11-12T16:00:31",
   "modo": "real",
   "status": "sucesso_com_alertas",
