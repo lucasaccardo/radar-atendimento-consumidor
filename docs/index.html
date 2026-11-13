@@ -32,7 +32,6 @@
   --good: #067a3a; --bad: #c62f3a; --good-bg: #e3f5ea; --bad-bg: #fde8ea;
   --warn-bg: #fff6cc; --warn-ink: #6b5600;
   --ok-bg: #e3f5ea; --err-bg: #fde8ea; --info-bg: #eceaff;
-  --shadow: 0 1px 2px rgba(15,15,114,.05), 0 8px 24px rgba(15,15,114,.07);
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -44,7 +43,6 @@
     --good: #3ddc84; --bad: #ff7b7b; --good-bg: rgba(61,220,132,.12); --bad-bg: rgba(255,123,123,.12);
     --warn-bg: #3a3410; --warn-ink: #f4e36b;
     --ok-bg: rgba(61,220,132,.12); --err-bg: rgba(255,123,123,.12); --info-bg: rgba(166,183,255,.14);
-    --shadow: 0 8px 24px rgba(0,0,0,.35);
   }
 }
 * { box-sizing: border-box; }
@@ -57,7 +55,6 @@ a { color: var(--s1); }
 .wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px 40px; }
 .num { font-variant-numeric: tabular-nums; }
 .muted { color: var(--muted); }
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* ---------- faixa de amostra ---------- */
 .faixa-amostra {
@@ -68,19 +65,12 @@ a { color: var(--s1); }
 /* ---------- cabeçalho (hero) ---------- */
 .hero {
   position: relative; overflow: hidden; color: #fff;
-  background:
-    radial-gradient(900px 420px at 88% 0%, rgba(240,82,82,.38), transparent 60%),
-    radial-gradient(700px 380px at 70% 110%, rgba(9,191,175,.22), transparent 60%),
-    linear-gradient(120deg, var(--marca-escura) 0%, var(--marca) 62%, #4a2bff 100%);
+  background: var(--marca-escura);
   padding: 34px 0 88px;
 }
 .hero .wrap { position: relative; z-index: 1; padding-bottom: 0; }
 .hero-arte { position: absolute; right: -60px; top: -70px; width: 520px; height: 520px; opacity: .9; pointer-events: none; }
-.hero-arte .varredura { transform-origin: 260px 260px; animation: girar 9s linear infinite; }
-@keyframes girar { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .hero-arte .varredura { animation: none; } }
 @media (max-width: 900px) { .hero-arte { opacity: .35; } }
-.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--amarelo); }
 h1 { font-size: clamp(30px, 4.4vw, 48px); line-height: 1.05; margin: 10px 0 0; letter-spacing: -.02em; max-width: 760px; }
 .pergunta { font-size: clamp(16px, 1.6vw, 19px); color: rgba(255,255,255,.86); margin: 12px 0 0; max-width: 760px; line-height: 1.45; }
 .meta-linha { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12.5px; margin-top: 18px; }
@@ -91,11 +81,16 @@ h1 { font-size: clamp(30px, 4.4vw, 48px); line-height: 1.05; margin: 10px 0 0; l
 /* ---------- filtros ---------- */
 .filtros {
   position: sticky; top: 8px; z-index: 20; margin: -56px 0 18px;
-  background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(10px);
-  border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;
 }
 .filtros .linha { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; }
 .campo { display: grid; gap: 3px; }
+@media (max-width: 600px) {
+  .filtros .linha { display: grid; grid-template-columns: 1fr 1fr; }
+  .filtros select, .filtros .btn-limpar { width: 100%; }
+  .periodo-pill { grid-column: 1 / -1; margin-left: 0; }
+}
 .campo label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 select, button {
   font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--border);
@@ -105,6 +100,7 @@ select { min-width: 150px; }
 button { cursor: pointer; }
 button:hover, select:hover { border-color: var(--axis); }
 button:focus-visible, select:focus-visible, .tile:focus-visible, th button:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
+.alvo-bolha:focus-visible { outline: none; stroke: var(--s1); stroke-width: 2; }
 .btn-limpar { background: transparent; color: var(--ink-2); }
 .periodo-pill {
   margin-left: auto; font-size: 12.5px; color: var(--ink-2); background: var(--surface-2);
@@ -115,8 +111,8 @@ button:focus-visible, select:focus-visible, .tile:focus-visible, th button:focus
 /* ---------- cartões ---------- */
 .grade { display: grid; gap: 16px; }
 .cartao {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-  padding: 18px 20px; box-shadow: var(--shadow); min-width: 0;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 18px 20px; min-width: 0;
 }
 .cartao h2 { font-size: 16px; margin: 0; letter-spacing: -.01em; }
 .cartao .sub { font-size: 12.5px; color: var(--muted); margin: 2px 0 12px; }
@@ -146,7 +142,6 @@ button:focus-visible, select:focus-visible, .tile:focus-visible, th button:focus
 .delta { display: inline-flex; gap: 4px; align-items: baseline; font-size: 11.5px; font-weight: 650; padding: 3px 8px; border-radius: 999px; }
 .delta.bom { color: var(--good); background: var(--good-bg); } .delta.ruim { color: var(--bad); background: var(--bad-bg); }
 .delta.neutro { color: var(--muted); background: var(--surface-2); }
-.delta .ref { font-weight: 400; color: var(--muted); }
 
 /* ---------- layouts de linha ---------- */
 .linha-2-1 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); margin-top: 16px; }
@@ -205,7 +200,6 @@ th, td { padding: 8px 8px; text-align: right; border-bottom: 1px solid var(--gri
 th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
 th { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; vertical-align: bottom; }
 th button { all: unset; cursor: pointer; display: inline-flex; gap: 3px; align-items: center; }
-th.grupo-col { border-bottom: 0; padding-bottom: 0; text-align: center; color: var(--ink-2); }
 td { font-variant-numeric: tabular-nums; }
 tbody tr:hover td { background: var(--surface-2); }
 tfoot td { font-weight: 700; border-top: 2px solid var(--axis); border-bottom: 0; }
@@ -228,15 +222,15 @@ details summary { cursor: pointer; color: var(--s1); font-size: 12.5px; margin-t
 
 /* rodapé */
 .metodologia { font-size: 13px; color: var(--ink-2); }
-.metodologia h2 { color: var(--ink); }
+.metodologia summary { color: var(--ink); font-size: 16px; font-weight: 650; margin-top: 0; }
 .metodologia dt { font-weight: 650; color: var(--ink); margin-top: 8px; }
 .metodologia dd { margin: 2px 0 0; }
 footer { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-.erro-carga { max-width: 640px; margin: 80px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+.erro-carga { max-width: 640px; margin: 80px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
 code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
 @media print {
   .filtros { position: static; }
-  .cartao { box-shadow: none; break-inside: avoid; }
+  .cartao { break-inside: avoid; }
   details { display: none; }
 }
 </style>
@@ -246,16 +240,10 @@ code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-
 <div id="app" hidden>
 <header class="hero">
   <svg class="hero-arte" viewBox="0 0 520 520" aria-hidden="true">
-    <defs>
-      <radialGradient id="brilho" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#A6B7FF" stop-opacity=".35"/><stop offset="1" stop-color="#A6B7FF" stop-opacity="0"/></radialGradient>
-      <linearGradient id="feixe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#A6B7FF" stop-opacity="0"/><stop offset="1" stop-color="#A6B7FF" stop-opacity=".45"/></linearGradient>
-    </defs>
-    <circle cx="260" cy="260" r="250" fill="url(#brilho)"/>
     <g fill="none" stroke="rgba(255,255,255,.16)" stroke-width="1.2">
       <circle cx="260" cy="260" r="70"/><circle cx="260" cy="260" r="130"/><circle cx="260" cy="260" r="190"/><circle cx="260" cy="260" r="248"/>
       <line x1="10" y1="260" x2="510" y2="260"/><line x1="260" y1="10" x2="260" y2="510"/>
     </g>
-    <g class="varredura"><path d="M260 260 L508 260 A248 248 0 0 0 435 85 Z" fill="url(#feixe)"/></g>
     <g>
       <circle cx="360" cy="170" r="6" fill="#F05252"/><circle cx="360" cy="170" r="14" fill="none" stroke="#F05252" stroke-opacity=".5"/>
       <circle cx="190" cy="330" r="5" fill="#F0FA00"/><circle cx="410" cy="320" r="4" fill="#09BFAF"/>
@@ -263,9 +251,8 @@ code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-
     </g>
   </svg>
   <div class="wrap">
-    <div class="eyebrow">Lâmina executiva · Atendimento ao consumidor de telecom</div>
     <h1>Radar de Atendimento em Telecom</h1>
-    <p class="pergunta">Onde o atendimento das operadoras está falhando, e o que melhorou ou piorou em relação ao mesmo período do ano anterior?</p>
+    <p class="pergunta">Onde o atendimento está falhando e o que mudou contra o mesmo período do ano anterior?</p>
     <div class="meta-linha" id="metaLinha"></div>
     <div class="autoria">Case técnico por <b>Lucas Mateus Sureira</b> · Data &amp; Performance Analyst · dados públicos Anatel + IBGE</div>
   </div>
@@ -300,7 +287,7 @@ code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-
     </article>
     <article class="cartao">
       <h2>Reclamações por 100 mil habitantes</h2>
-      <p class="sub">Cruza Anatel com a população do IBGE. Clique num estado para filtrar.</p>
+      <p class="sub">Clique num estado para filtrar.</p>
       <div class="mapa" id="mapa" role="group" aria-label="Mapa em mosaico das UFs"></div>
       <div class="escala" id="escalaMapa"></div>
     </article>
@@ -309,7 +296,7 @@ code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-
   <section class="grade linha-1-1">
     <article class="cartao">
       <h2>Operadoras: velocidade x resolução no primeiro contato</h2>
-      <p class="sub">Tempo médio de resposta (→) contra taxa de reabertura (↑). Tamanho = volume. Linhas = média do recorte. Clique para filtrar.</p>
+      <p class="sub">→ tempo de resposta · ↑ reabertura · tamanho = volume</p>
       <div class="grafico" id="gOperadoras"></div>
     </article>
     <article class="cartao">
@@ -345,7 +332,7 @@ code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-
     <article class="cartao">
       <div class="cabeca">
         <div><h2>Qualidade e atualização dos dados</h2>
-        <p class="sub">Checagens automáticas que rodam antes de cada publicação. Com ERRO, nada é publicado.</p></div>
+        <p class="sub">Com ERRO, nada é publicado.</p></div>
         <div id="resumoQualidade" class="chips"></div>
       </div>
       <div class="checks" id="checks"></div>
@@ -354,8 +341,8 @@ code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-
   </section>
 
   <section class="cartao metodologia" style="margin-top:16px">
-    <h2>Como ler os números</h2>
-    <dl id="definicoes"></dl>
+    <details><summary>Como ler os números (definições)</summary>
+    <dl id="definicoes"></dl></details>
     <p style="margin-top:12px"><b>Fontes:</b> <span id="fontes"></span></p>
   </section>
 
@@ -856,7 +843,8 @@ function renderOperadoras(per, kTotal) {
     lab.textContent = d.nome; lab.style.fill = apagado ? css("--muted") : css("--ink");
   }
   for (const { d, sel, cx, cy, rr } of bolhas) {
-    const alvo = svg("circle", { cx, cy, r: Math.max(rr, 12), fill: "transparent", tabindex: 0, style: "cursor:pointer" }, g);
+    const alvo = svg("circle", { cx, cy, r: Math.max(rr, 12), fill: "transparent", tabindex: 0, role: "button", class: "alvo-bolha",
+      "aria-pressed": sel, "aria-label": `${d.nome}: ${fmt.d1(d.k.tempo)} dias de resposta, ${fmt.pct(d.k.reabertura)} de reabertura` }, g);
     alvo.addEventListener("pointermove", ev => mostrarTip(ev, d.nome, [
       { nome: "Reclamações", valor: fmt.int(d.k.reclamacoes) },
       { nome: "Participação", valor: fmt.pct(100 * d.k.reclamacoes / totalRec) },
@@ -866,7 +854,9 @@ function renderOperadoras(per, kTotal) {
       { nome: "Nota média", valor: fmt.d2(d.k.nota) },
     ]));
     alvo.addEventListener("pointerleave", esconderTip);
-    alvo.addEventListener("click", () => { ESTADO.operadora = sel ? -1 : d.o; renderizar(); });
+    const alternar = () => { ESTADO.operadora = sel ? -1 : d.o; renderizar(); };
+    alvo.addEventListener("click", alternar);
+    alvo.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); alternar(); } });
   }
   return lista.map(d => ({ ...d, media }));
 }
@@ -1040,7 +1030,7 @@ function renderCanal(per) {
     if (ESTADO.operadora >= 0 && r[2] !== ESTADO.operadora) continue;
     acc.set(r[3], (acc.get(r[3]) || 0) + r[4]); total += r[4];
   }
-  el("subCanal").textContent = `Canal usado para registrar a reclamação na Anatel · ${per.rotulo}` + (ufsSelecionadas() ? " · visão Brasil" : "");
+  el("subCanal").textContent = `Registro na Anatel · ${per.rotulo}` + (ufsSelecionadas() ? " · visão Brasil" : "");
   const box = el("gCanal"); box.replaceChildren();
   const lista = [...acc].sort((a, b) => b[1] - a[1]), max = Math.max(1, ...lista.map(d => d[1]));
   for (const [c, v] of lista.slice(0, 7)) {
@@ -1079,16 +1069,13 @@ function renderResumo(per, k, kAnt, ops, assuntos) {
     const v = 100 * (k.reclamacoes / kAnt.reclamacoes - 1);
     const motor = ops.length > 1 ? ops.map(o => ({ nome: o.nome, d: o.k.reclamacoes - o.kAnt.reclamacoes }))
       .sort((a, b) => (v >= 0 ? b.d - a.d : a.d - b.d))[0] : null;
-    const partes = [`Em ${per.rotulo}, foram `, { b: fmt.int(k.reclamacoes) }, " reclamações: ",
-      { b: `${v >= 0 ? "+" : "−"}${nf1.format(Math.abs(v))}%` }, ` em relação ao mesmo período de ${ESTADO.ano - 1}. `];
+    const partes = [{ b: fmt.int(k.reclamacoes) }, " reclamações, ",
+      { b: `${v >= 0 ? "+" : "−"}${nf1.format(Math.abs(v))}%` }, ` vs ${ESTADO.ano - 1}. `];
     if (motor && ESTADO.operadora < 0 && Math.sign(motor.d) === Math.sign(v) && motor.d !== 0)
-      partes.push(`A maior contribuição veio de `, { b: motor.nome }, ` (${motor.d > 0 ? "+" : "−"}${nf0.format(Math.abs(motor.d))} reclamações).`);
-    const dt = variacao(KPIS[2], k.tempo, kAnt.tempo);
-    if (dt) partes.push(` O tempo médio de resposta ficou em ${fmt.d1(k.tempo)} dias (${dt.texto}).`);
+      partes.push(`${motor.d > 0 ? "Maior alta" : "Maior queda"}: `, { b: motor.nome }, ` (${motor.d > 0 ? "+" : "−"}${nf0.format(Math.abs(motor.d))}).`);
     cartao("O que mudou", partes);
   } else {
-    cartao("O que mudou", [`Em ${per.rotulo}, foram `, { b: fmt.int(k.reclamacoes) },
-      ` reclamações. Não há ano anterior na série para comparar o mesmo período.`]);
+    cartao("O que mudou", [{ b: fmt.int(k.reclamacoes) }, ` reclamações. Sem ano anterior na série para comparar.`]);
   }
   // 2. Onde dói. Primeiro testa o "paradoxo": prazo estável, mas resolução caindo.
   //    Se não houver paradoxo, fala da reabertura (termômetro de FCR).
@@ -1099,30 +1086,25 @@ function renderResumo(per, k, kAnt, ops, assuntos) {
   if (dSla && dRes && dRes.valor <= -2 && Math.abs(dSla.valor) < 2) {
     const quedas = relevantes.filter(o => o.k.resolvidas != null && o.kAnt.resolvidas != null)
       .map(o => ({ nome: o.nome, d: o.k.resolvidas - o.kAnt.resolvidas })).sort((a, b) => a.d - b.d);
-    const partes = [`O prazo está sendo cumprido: `, { b: fmt.pct(k.sla) }, ` respondidas em até ${D.meta.sla_dias} dias. ` +
-      `Mas a resolução caiu `, { b: `${nf1.format(-dRes.valor)} p.p.` }, ` (${fmt.pct(kAnt.resolvidas)} → ${fmt.pct(k.resolvidas)})` +
-      (kAnt.nota != null ? ` e a nota foi de ${fmt.d2(kAnt.nota)} para ${fmt.d2(k.nota)}` : "") +
-      `: responder no prazo não está significando resolver.`];
-    if (quedas.length && quedas[0].d < 0) partes.push(` A maior queda foi na `, { b: quedas[0].nome }, ` (−${nf1.format(-quedas[0].d)} p.p.).`);
+    const partes = [{ b: "Responde no prazo, mas resolve menos." }, ` ${fmt.pct(k.sla)} respondidas em até ${D.meta.sla_dias} dias; resolução `,
+      { b: `−${nf1.format(-dRes.valor)} p.p.` }, ` (${fmt.pct(kAnt.resolvidas)} → ${fmt.pct(k.resolvidas)}).`];
+    if (quedas.length && quedas[0].d < 0) partes.push(` Maior queda: `, { b: quedas[0].nome }, ` (−${nf1.format(-quedas[0].d)} p.p.).`);
     cartao("Onde dói", partes);
   } else {
   const pior = relevantes.length > 1 ? [...relevantes].sort((a, b) => b.k.reabertura - a.k.reabertura)[0] : null;
   const dr = per.temComparacao ? variacao(KPIS[4], k.reabertura, kAnt.reabertura) : null;
-  const p2 = [`A taxa de reabertura, nosso termômetro de resolução no primeiro contato, está em `, { b: fmt.pct(k.reabertura) },
-    dr ? ` (${dr.texto} vs ${ESTADO.ano - 1}, ${dr.palavra}). ` : ". "];
-  if (pior && ESTADO.operadora < 0) p2.push(`Entre as operadoras relevantes, `, { b: pior.nome }, ` tem a maior: ${fmt.pct(pior.k.reabertura)}, ` +
-    `${nf1.format(pior.k.reabertura - k.reabertura)} p.p. acima da média.`);
-  else p2.push(`${fmt.pct(k.sla)} das reclamações foram respondidas em até ${D.meta.sla_dias} dias.`);
+  const p2 = [`Reabertura em `, { b: fmt.pct(k.reabertura) }, dr ? ` (${dr.texto} vs ${ESTADO.ano - 1}). ` : ". "];
+  if (pior && ESTADO.operadora < 0) p2.push(`Maior: `, { b: pior.nome }, `, ${fmt.pct(pior.k.reabertura)}.`);
+  else p2.push(`${fmt.pct(k.sla)} respondidas em até ${D.meta.sla_dias} dias.`);
   cartao("Onde dói", p2);
   }
   // 3. Onde agir primeiro: assunto com mais reaberturas "em excesso" (impacto, não só taxa)
   const alvo = [...assuntos.lista].sort((a, b) => b.excesso - a.excesso)[0];
   if (alvo && alvo.excesso > 0) {
-    cartao("Onde agir primeiro", [{ b: alvo.nome }, ` representa ${fmt.pct(100 * alvo.rec / assuntos.total)} do volume e reabre ${fmt.pct(alvo.reab)}. ` +
-      `Trazer esse assunto para a média de reabertura (${fmt.pct(assuntos.mediaReab)}) evitaria cerca de `, { b: nf0.format(alvo.excesso) },
-      ` reaberturas no período. Priorizar por impacto (volume × excesso), e não só pela taxa, é o que dá mais retorno para a operação.`]);
+    cartao("Onde agir primeiro", [{ b: alvo.nome }, `: ${fmt.pct(100 * alvo.rec / assuntos.total)} do volume, reabre ${fmt.pct(alvo.reab)}. ` +
+      `Levar à média (${fmt.pct(assuntos.mediaReab)}) evita ~`, { b: nf0.format(alvo.excesso) }, ` reaberturas.`]);
   } else {
-    cartao("Onde agir primeiro", ["Nenhum assunto tem reabertura relevante acima da média neste recorte."]);
+    cartao("Onde agir primeiro", ["Nenhum assunto com reabertura relevante acima da média."]);
   }
 }
 
@@ -1170,6 +1152,7 @@ function renderMetodologia() {
     ["Taxa de reabertura", "Registros que são reaberturas ÷ total de registros. Reabrir significa que a primeira resposta não resolveu: é o equivalente público do FCR (resolução no primeiro contato) de uma central de atendimento."],
     ["Resolvidas", "Reclamações que o consumidor marcou como resolvidas ÷ reclamações avaliadas. Quem não avalia fica fora do cálculo (na Anatel, a não avaliação é classificada como resolvida automaticamente, o que inflaria o número)."],
     ["Por 100 mil habitantes", "Reclamações do período ÷ população estimada da UF (IBGE, tabela 6579) × 100.000. Permite comparar estados de tamanhos diferentes."],
+    ["Onde agir primeiro", "Assunto com mais reaberturas acima da média: volume × excesso de reabertura. Prioriza impacto, e não só a taxa."],
     ["Operadoras \"OUTRAS\"", `Prestadoras com menos de ${nf1.format(100 * D.meta.min_participacao_operadora)}% do volume total são agrupadas, para a leitura não se perder na cauda longa.`],
   ];
   const dl = el("definicoes"); dl.replaceChildren();

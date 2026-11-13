@@ -206,4 +206,6 @@ O arquivo `reclamacoes.csv` é só o **histórico**. Os dados recentes estão no
 
 **Impacto.** Nenhum nos números: o IBGE publica a estimativa de população uma vez por ano, então a cópia é a mesma informação que a API devolveria.
 
+**Verificação.** A execução no GitHub (com a cópia) e a execução local (com a API) geraram os mesmos números, linha por linha: 162.634 linhas na fato, 81 linhas de população e 67.667 linhas de canal, sem nenhuma diferença.
+
 **Lição.** Testar a automação no ambiente real é a única forma de descobrir esse tipo de problema. Ler o log até a linha do erro levou um minuto e mostrou exatamente qual fonte falhou.

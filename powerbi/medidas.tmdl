@@ -1,0 +1,459 @@
+createOrReplace
+
+	ref table _Medidas
+
+		/// Registros de reclamação no período. Cada reabertura conta como um registro.
+		measure 'Reclamações' = SUM ( fato_atendimento_mensal[reclamacoes] )
+			formatString: #,0
+			displayFolder: 1. Indicadores
+
+		/// Reclamações com UF informada dividido pela população do IBGE do ano selecionado.
+		measure 'Reclamações por 100 mil hab.' =
+				VAR RecComUF = CALCULATE ( [Reclamações], KEEPFILTERS ( dim_uf[uf] <> "NI" ) )
+				RETURN DIVIDE ( RecComUF, [População] ) * 100000
+			formatString: #,0.0
+			displayFolder: 1. Indicadores
+
+		/// Média ponderada: soma dos tempos dividido pela quantidade de tempos válidos.
+		measure 'Tempo de resposta (dias)' =
+				DIVIDE (
+					SUM ( fato_atendimento_mensal[soma_tempo_resposta] ),
+					SUM ( fato_atendimento_mensal[qtd_tempo_resposta] )
+				)
+			formatString: 0.0
+			displayFolder: 1. Indicadores
+
+		/// Respondidas em até 10 dias dividido pelo total de reclamações.
+		measure '% Respondidas no prazo' = DIVIDE ( SUM ( fato_atendimento_mensal[respondidas_no_sla] ), [Reclamações] )
+			formatString: 0.0%
+			displayFolder: 1. Indicadores
+
+		/// Registros que são reaberturas dividido pelo total de registros.
+		measure 'Taxa de reabertura' = DIVIDE ( SUM ( fato_atendimento_mensal[reabertas] ), [Reclamações] )
+			formatString: 0.0%
+			displayFolder: 1. Indicadores
+
+		/// Resolvidas dividido pelas reclamações que o consumidor avaliou.
+		measure '% Resolvidas' = DIVIDE ( SUM ( fato_atendimento_mensal[resolvidas] ), SUM ( fato_atendimento_mensal[avaliadas] ) )
+			formatString: 0.0%
+			displayFolder: 1. Indicadores
+
+		/// Média ponderada das notas válidas (1 a 5).
+		measure 'Nota média' = DIVIDE ( SUM ( fato_atendimento_mensal[soma_nota] ), SUM ( fato_atendimento_mensal[qtd_nota] ) )
+			formatString: 0.00
+			displayFolder: 1. Indicadores
+
+		/// Soma da população das UFs filtradas no ano selecionado (sem a UF NI).
+		measure 'População' =
+				VAR AnoRef = MAX ( dim_calendario[ano] )
+				RETURN
+					SUMX (
+						FILTER ( VALUES ( dim_uf[uf] ), dim_uf[uf] <> "NI" ),
+						LOOKUPVALUE (
+							dim_populacao[populacao],
+							dim_populacao[uf], dim_uf[uf],
+							dim_populacao[ano], AnoRef
+						)
+					)
+			formatString: #,0
+			displayFolder: 2. Apoio
+
+		/// Participação da linha no total da seleção atual.
+		measure 'Participação %' = DIVIDE ( [Reclamações], CALCULATE ( [Reclamações], ALLSELECTED () ) )
+			formatString: 0.0%
+			displayFolder: 2. Apoio
+
+		/// Reclamações do período dividido pela quantidade de meses com dados.
+		measure 'Média mensal' = DIVIDE ( [Reclamações], CALCULATE ( COUNTROWS ( dim_calendario ), dim_calendario[tem_dados] = TRUE () ) )
+			formatString: #,0
+			displayFolder: 2. Apoio
+
+		/// Média das reclamações dos 3 últimos meses até o mês do contexto.
+		measure 'Média móvel 3 meses' =
+				VAR MesAtual = MAX ( dim_calendario[data_mes] )
+				VAR Janela =
+					FILTER (
+						ALL ( dim_calendario ),
+						dim_calendario[data_mes] > EDATE ( MesAtual, -3 )
+							&& dim_calendario[data_mes] <= MesAtual
+							&& dim_calendario[tem_dados]
+					)
+				RETURN
+					IF ( COUNTROWS ( Janela ) = 3, DIVIDE ( SUMX ( Janela, [Reclamações] ), 3 ) )
+			formatString: #,0
+			displayFolder: 2. Apoio
+
+		/// Reclamações de janeiro até o mês do contexto, no mesmo ano.
+		measure 'Acumulado no ano' =
+				VAR MesAtual = MAX ( dim_calendario[data_mes] )
+				RETURN
+					CALCULATE (
+						[Reclamações],
+						REMOVEFILTERS ( dim_calendario ),
+						dim_calendario[ano] = YEAR ( MesAtual ),
+						dim_calendario[data_mes] <= MesAtual
+					)
+			formatString: #,0
+			displayFolder: 2. Apoio
+
+		/// Texto do período comparado, por exemplo jan–set/2026 vs jan–set/2025.
+		measure 'Período analisado' =
+				VAR AnoSel = SELECTEDVALUE ( dim_calendario[ano] )
+				VAR MesIni = CALCULATE ( MIN ( dim_calendario[mes] ), dim_calendario[tem_dados] = TRUE () )
+				VAR MesFim = CALCULATE ( MAX ( dim_calendario[mes] ), dim_calendario[tem_dados] = TRUE () )
+				VAR NomeIni = LOOKUPVALUE ( dim_calendario[nome_mes], dim_calendario[mes], MesIni )
+				VAR NomeFim = LOOKUPVALUE ( dim_calendario[nome_mes], dim_calendario[mes], MesFim )
+				VAR Faixa = IF ( MesIni = MesFim, NomeIni, NomeIni & "–" & NomeFim )
+				VAR TemAnterior = NOT ISBLANK ( [Reclamações (ano anterior)] )
+				RETURN
+					SWITCH (
+						TRUE (),
+						ISBLANK ( AnoSel ), "Selecione um ano",
+						ISBLANK ( MesIni ), BLANK (),
+						Faixa & "/" & AnoSel
+							& IF ( TemAnterior, " vs " & Faixa & "/" & ( AnoSel - 1 ), " (sem ano anterior para comparar)" )
+					)
+			displayFolder: 2. Apoio
+
+		/// Reclamações da base de registros por canal de entrada. A operadora é ligada por relacionamento virtual (TREATAS), porque essa base vem agrupada por grupo de operadora.
+		measure 'Solicitações por canal' =
+				CALCULATE (
+					SUM ( fato_canal_mensal[solicitacoes] ),
+					TREATAS ( VALUES ( dim_operadora[operadora_exibicao] ), fato_canal_mensal[operadora] )
+				)
+			formatString: #,0
+			displayFolder: 2. Apoio
+
+		/// Participação de cada canal no total de solicitações da seleção.
+		measure '% do canal' = DIVIDE ( [Solicitações por canal], CALCULATE ( [Solicitações por canal], REMOVEFILTERS ( fato_canal_mensal[canal_entrada] ) ) )
+			formatString: 0.0%
+			displayFolder: 2. Apoio
+
+		/// Mesmos meses do ano anterior aos meses com dados do ano selecionado. Fica em branco se houver mais de um ano selecionado.
+		measure 'Reclamações (ano anterior)' =
+				VAR AnoSel = SELECTEDVALUE ( dim_calendario[ano] )
+				VAR MesesComDados =
+					CALCULATETABLE ( VALUES ( dim_calendario[mes] ), dim_calendario[tem_dados] = TRUE () )
+				RETURN
+					IF (
+						NOT ISBLANK ( AnoSel ),
+						CALCULATE (
+							[Reclamações],
+							REMOVEFILTERS ( dim_calendario ),
+							dim_calendario[ano] = AnoSel - 1,
+							TREATAS ( MesesComDados, dim_calendario[mes] )
+						)
+					)
+			formatString: #,0
+			displayFolder: 3. Ano anterior (mesmo período)
+
+		/// Mesmos meses do ano anterior aos meses com dados do ano selecionado. Fica em branco se houver mais de um ano selecionado.
+		measure 'Reclamações por 100 mil hab. (ano anterior)' =
+				VAR AnoSel = SELECTEDVALUE ( dim_calendario[ano] )
+				VAR MesesComDados =
+					CALCULATETABLE ( VALUES ( dim_calendario[mes] ), dim_calendario[tem_dados] = TRUE () )
+				RETURN
+					IF (
+						NOT ISBLANK ( AnoSel ),
+						CALCULATE (
+							[Reclamações por 100 mil hab.],
+							REMOVEFILTERS ( dim_calendario ),
+							dim_calendario[ano] = AnoSel - 1,
+							TREATAS ( MesesComDados, dim_calendario[mes] )
+						)
+					)
+			formatString: #,0.0
+			displayFolder: 3. Ano anterior (mesmo período)
+
+		/// Mesmos meses do ano anterior aos meses com dados do ano selecionado. Fica em branco se houver mais de um ano selecionado.
+		measure 'Tempo de resposta (dias) (ano anterior)' =
+				VAR AnoSel = SELECTEDVALUE ( dim_calendario[ano] )
+				VAR MesesComDados =
+					CALCULATETABLE ( VALUES ( dim_calendario[mes] ), dim_calendario[tem_dados] = TRUE () )
+				RETURN
+					IF (
+						NOT ISBLANK ( AnoSel ),
+						CALCULATE (
+							[Tempo de resposta (dias)],
+							REMOVEFILTERS ( dim_calendario ),
+							dim_calendario[ano] = AnoSel - 1,
+							TREATAS ( MesesComDados, dim_calendario[mes] )
+						)
+					)
+			formatString: 0.0
+			displayFolder: 3. Ano anterior (mesmo período)
+
+		/// Mesmos meses do ano anterior aos meses com dados do ano selecionado. Fica em branco se houver mais de um ano selecionado.
+		measure '% Respondidas no prazo (ano anterior)' =
+				VAR AnoSel = SELECTEDVALUE ( dim_calendario[ano] )
+				VAR MesesComDados =
+					CALCULATETABLE ( VALUES ( dim_calendario[mes] ), dim_calendario[tem_dados] = TRUE () )
+				RETURN
+					IF (
+						NOT ISBLANK ( AnoSel ),
+						CALCULATE (
+							[% Respondidas no prazo],
+							REMOVEFILTERS ( dim_calendario ),
+							dim_calendario[ano] = AnoSel - 1,
+							TREATAS ( MesesComDados, dim_calendario[mes] )
+						)
+					)
+			formatString: 0.0%
+			displayFolder: 3. Ano anterior (mesmo período)
+
+		/// Mesmos meses do ano anterior aos meses com dados do ano selecionado. Fica em branco se houver mais de um ano selecionado.
+		measure 'Taxa de reabertura (ano anterior)' =
+				VAR AnoSel = SELECTEDVALUE ( dim_calendario[ano] )
+				VAR MesesComDados =
+					CALCULATETABLE ( VALUES ( dim_calendario[mes] ), dim_calendario[tem_dados] = TRUE () )
+				RETURN
+					IF (
+						NOT ISBLANK ( AnoSel ),
+						CALCULATE (
+							[Taxa de reabertura],
+							REMOVEFILTERS ( dim_calendario ),
+							dim_calendario[ano] = AnoSel - 1,
+							TREATAS ( MesesComDados, dim_calendario[mes] )
+						)
+					)
+			formatString: 0.0%
+			displayFolder: 3. Ano anterior (mesmo período)
+
+		/// Mesmos meses do ano anterior aos meses com dados do ano selecionado. Fica em branco se houver mais de um ano selecionado.
+		measure '% Resolvidas (ano anterior)' =
+				VAR AnoSel = SELECTEDVALUE ( dim_calendario[ano] )
+				VAR MesesComDados =
+					CALCULATETABLE ( VALUES ( dim_calendario[mes] ), dim_calendario[tem_dados] = TRUE () )
+				RETURN
+					IF (
+						NOT ISBLANK ( AnoSel ),
+						CALCULATE (
+							[% Resolvidas],
+							REMOVEFILTERS ( dim_calendario ),
+							dim_calendario[ano] = AnoSel - 1,
+							TREATAS ( MesesComDados, dim_calendario[mes] )
+						)
+					)
+			formatString: 0.0%
+			displayFolder: 3. Ano anterior (mesmo período)
+
+		/// Mesmos meses do ano anterior aos meses com dados do ano selecionado. Fica em branco se houver mais de um ano selecionado.
+		measure 'Nota média (ano anterior)' =
+				VAR AnoSel = SELECTEDVALUE ( dim_calendario[ano] )
+				VAR MesesComDados =
+					CALCULATETABLE ( VALUES ( dim_calendario[mes] ), dim_calendario[tem_dados] = TRUE () )
+				RETURN
+					IF (
+						NOT ISBLANK ( AnoSel ),
+						CALCULATE (
+							[Nota média],
+							REMOVEFILTERS ( dim_calendario ),
+							dim_calendario[ano] = AnoSel - 1,
+							TREATAS ( MesesComDados, dim_calendario[mes] )
+						)
+					)
+			formatString: 0.00
+			displayFolder: 3. Ano anterior (mesmo período)
+
+		/// Variação percentual contra o mesmo período do ano anterior.
+		measure 'Var. % reclamações' = DIVIDE ( [Reclamações] - [Reclamações (ano anterior)], [Reclamações (ano anterior)] )
+			formatString: +0.0%;-0.0%;0.0%
+			displayFolder: 4. Variação
+
+		/// Variação percentual contra o mesmo período do ano anterior.
+		measure 'Var. % por 100 mil' = DIVIDE ( [Reclamações por 100 mil hab.] - [Reclamações por 100 mil hab. (ano anterior)], [Reclamações por 100 mil hab. (ano anterior)] )
+			formatString: +0.0%;-0.0%;0.0%
+			displayFolder: 4. Variação
+
+		/// Diferença em dias contra o mesmo período do ano anterior.
+		measure 'Var. tempo (dias)' = IF ( NOT ISBLANK ( [Tempo de resposta (dias) (ano anterior)] ), [Tempo de resposta (dias)] - [Tempo de resposta (dias) (ano anterior)] )
+			formatString: +0.0;-0.0;0.0
+			displayFolder: 4. Variação
+
+		/// Diferença em pontos percentuais contra o mesmo período do ano anterior.
+		measure 'Var. no prazo (p.p.)' = IF ( NOT ISBLANK ( [% Respondidas no prazo (ano anterior)] ), ( [% Respondidas no prazo] - [% Respondidas no prazo (ano anterior)] ) * 100 )
+			formatString: +0.0;-0.0;0.0
+			displayFolder: 4. Variação
+
+		/// Diferença em pontos percentuais contra o mesmo período do ano anterior.
+		measure 'Var. reabertura (p.p.)' = IF ( NOT ISBLANK ( [Taxa de reabertura (ano anterior)] ), ( [Taxa de reabertura] - [Taxa de reabertura (ano anterior)] ) * 100 )
+			formatString: +0.0;-0.0;0.0
+			displayFolder: 4. Variação
+
+		/// Diferença em pontos percentuais contra o mesmo período do ano anterior.
+		measure 'Var. resolvidas (p.p.)' = IF ( NOT ISBLANK ( [% Resolvidas (ano anterior)] ), ( [% Resolvidas] - [% Resolvidas (ano anterior)] ) * 100 )
+			formatString: +0.0;-0.0;0.0
+			displayFolder: 4. Variação
+
+		/// Diferença da nota contra o mesmo período do ano anterior.
+		measure 'Var. nota' = IF ( NOT ISBLANK ( [Nota média (ano anterior)] ), [Nota média] - [Nota média (ano anterior)] )
+			formatString: +0.00;-0.00;0.00
+			displayFolder: 4. Variação
+
+		/// Seta e variação contra o ano anterior, para usar embaixo do cartão.
+		measure 'Texto var. reclamações' =
+				VAR v = [Var. % reclamações]
+				RETURN
+					IF (
+						ISBLANK ( v ),
+						IF ( HASONEVALUE ( dim_calendario[ano] ), "sem ano anterior", "selecione um ano" ),
+						IF ( v > 0, "▲ ", IF ( v < 0, "▼ ", "■ " ) ) & FORMAT ( v, "+0.0%;-0.0%;0.0%" )
+							& " vs " & ( MAX ( dim_calendario[ano] ) - 1 )
+					)
+			displayFolder: 5. Cartões
+
+		/// Verde = melhorou, vermelho = piorou, cinza = estável. Para este indicador, cair é bom.
+		measure 'Cor var. reclamações' =
+				VAR v = [Var. % reclamações]
+				RETURN
+					SWITCH (
+						TRUE (),
+						ISBLANK ( v ) || ABS ( v ) < 0.005, "#7D7E92",
+						v * -1 > 0, "#067A3A",
+						"#C62F3A"
+					)
+			displayFolder: 5. Cartões
+
+		/// Seta e variação contra o ano anterior, para usar embaixo do cartão.
+		measure 'Texto var. por 100 mil' =
+				VAR v = [Var. % por 100 mil]
+				RETURN
+					IF (
+						ISBLANK ( v ),
+						IF ( HASONEVALUE ( dim_calendario[ano] ), "sem ano anterior", "selecione um ano" ),
+						IF ( v > 0, "▲ ", IF ( v < 0, "▼ ", "■ " ) ) & FORMAT ( v, "+0.0%;-0.0%;0.0%" )
+							& " vs " & ( MAX ( dim_calendario[ano] ) - 1 )
+					)
+			displayFolder: 5. Cartões
+
+		/// Verde = melhorou, vermelho = piorou, cinza = estável. Para este indicador, cair é bom.
+		measure 'Cor var. por 100 mil' =
+				VAR v = [Var. % por 100 mil]
+				RETURN
+					SWITCH (
+						TRUE (),
+						ISBLANK ( v ) || ABS ( v ) < 0.005, "#7D7E92",
+						v * -1 > 0, "#067A3A",
+						"#C62F3A"
+					)
+			displayFolder: 5. Cartões
+
+		/// Seta e variação contra o ano anterior, para usar embaixo do cartão.
+		measure 'Texto var. tempo' =
+				VAR v = [Var. tempo (dias)]
+				RETURN
+					IF (
+						ISBLANK ( v ),
+						IF ( HASONEVALUE ( dim_calendario[ano] ), "sem ano anterior", "selecione um ano" ),
+						IF ( v > 0, "▲ ", IF ( v < 0, "▼ ", "■ " ) ) & FORMAT ( v, "+0.0;-0.0;0.0" ) & " dias"
+							& " vs " & ( MAX ( dim_calendario[ano] ) - 1 )
+					)
+			displayFolder: 5. Cartões
+
+		/// Verde = melhorou, vermelho = piorou, cinza = estável. Para este indicador, cair é bom.
+		measure 'Cor var. tempo' =
+				VAR v = [Var. tempo (dias)]
+				RETURN
+					SWITCH (
+						TRUE (),
+						ISBLANK ( v ) || ABS ( v ) < 0.05, "#7D7E92",
+						v * -1 > 0, "#067A3A",
+						"#C62F3A"
+					)
+			displayFolder: 5. Cartões
+
+		/// Seta e variação contra o ano anterior, para usar embaixo do cartão.
+		measure 'Texto var. no prazo' =
+				VAR v = [Var. no prazo (p.p.)]
+				RETURN
+					IF (
+						ISBLANK ( v ),
+						IF ( HASONEVALUE ( dim_calendario[ano] ), "sem ano anterior", "selecione um ano" ),
+						IF ( v > 0, "▲ ", IF ( v < 0, "▼ ", "■ " ) ) & FORMAT ( v, "+0.0;-0.0;0.0" ) & " p.p."
+							& " vs " & ( MAX ( dim_calendario[ano] ) - 1 )
+					)
+			displayFolder: 5. Cartões
+
+		/// Verde = melhorou, vermelho = piorou, cinza = estável. Para este indicador, subir é bom.
+		measure 'Cor var. no prazo' =
+				VAR v = [Var. no prazo (p.p.)]
+				RETURN
+					SWITCH (
+						TRUE (),
+						ISBLANK ( v ) || ABS ( v ) < 0.1, "#7D7E92",
+						v * 1 > 0, "#067A3A",
+						"#C62F3A"
+					)
+			displayFolder: 5. Cartões
+
+		/// Seta e variação contra o ano anterior, para usar embaixo do cartão.
+		measure 'Texto var. reabertura' =
+				VAR v = [Var. reabertura (p.p.)]
+				RETURN
+					IF (
+						ISBLANK ( v ),
+						IF ( HASONEVALUE ( dim_calendario[ano] ), "sem ano anterior", "selecione um ano" ),
+						IF ( v > 0, "▲ ", IF ( v < 0, "▼ ", "■ " ) ) & FORMAT ( v, "+0.0;-0.0;0.0" ) & " p.p."
+							& " vs " & ( MAX ( dim_calendario[ano] ) - 1 )
+					)
+			displayFolder: 5. Cartões
+
+		/// Verde = melhorou, vermelho = piorou, cinza = estável. Para este indicador, cair é bom.
+		measure 'Cor var. reabertura' =
+				VAR v = [Var. reabertura (p.p.)]
+				RETURN
+					SWITCH (
+						TRUE (),
+						ISBLANK ( v ) || ABS ( v ) < 0.1, "#7D7E92",
+						v * -1 > 0, "#067A3A",
+						"#C62F3A"
+					)
+			displayFolder: 5. Cartões
+
+		/// Seta e variação contra o ano anterior, para usar embaixo do cartão.
+		measure 'Texto var. resolvidas' =
+				VAR v = [Var. resolvidas (p.p.)]
+				RETURN
+					IF (
+						ISBLANK ( v ),
+						IF ( HASONEVALUE ( dim_calendario[ano] ), "sem ano anterior", "selecione um ano" ),
+						IF ( v > 0, "▲ ", IF ( v < 0, "▼ ", "■ " ) ) & FORMAT ( v, "+0.0;-0.0;0.0" ) & " p.p."
+							& " vs " & ( MAX ( dim_calendario[ano] ) - 1 )
+					)
+			displayFolder: 5. Cartões
+
+		/// Verde = melhorou, vermelho = piorou, cinza = estável. Para este indicador, subir é bom.
+		measure 'Cor var. resolvidas' =
+				VAR v = [Var. resolvidas (p.p.)]
+				RETURN
+					SWITCH (
+						TRUE (),
+						ISBLANK ( v ) || ABS ( v ) < 0.1, "#7D7E92",
+						v * 1 > 0, "#067A3A",
+						"#C62F3A"
+					)
+			displayFolder: 5. Cartões
+
+		/// Seta e variação contra o ano anterior, para usar embaixo do cartão.
+		measure 'Texto var. nota' =
+				VAR v = [Var. nota]
+				RETURN
+					IF (
+						ISBLANK ( v ),
+						IF ( HASONEVALUE ( dim_calendario[ano] ), "sem ano anterior", "selecione um ano" ),
+						IF ( v > 0, "▲ ", IF ( v < 0, "▼ ", "■ " ) ) & FORMAT ( v, "+0.00;-0.00;0.00" )
+							& " vs " & ( MAX ( dim_calendario[ano] ) - 1 )
+					)
+			displayFolder: 5. Cartões
+
+		/// Verde = melhorou, vermelho = piorou, cinza = estável. Para este indicador, subir é bom.
+		measure 'Cor var. nota' =
+				VAR v = [Var. nota]
+				RETURN
+					SWITCH (
+						TRUE (),
+						ISBLANK ( v ) || ABS ( v ) < 0.01, "#7D7E92",
+						v * 1 > 0, "#067A3A",
+						"#C62F3A"
+					)
+			displayFolder: 5. Cartões
