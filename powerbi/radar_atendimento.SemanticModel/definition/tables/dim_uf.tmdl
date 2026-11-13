@@ -1,0 +1,54 @@
+table dim_uf
+	lineageTag: 59ced3d5-a205-43ad-9cd5-a38a61e675ac
+
+	column uf
+		dataType: string
+		lineageTag: ea9e1213-b1b3-4054-8bec-3e821926fb08
+		summarizeBy: none
+		sourceColumn: uf
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome_uf
+		dataType: string
+		lineageTag: c6c022bc-755b-4010-b8c6-3f8ce58d5d4a
+		summarizeBy: none
+		sourceColumn: nome_uf
+
+		annotation SummarizationSetBy = Automatic
+
+	column regiao_sigla
+		dataType: string
+		lineageTag: 0d3e0856-f1f9-4548-b98d-1172c69dd2d2
+		summarizeBy: none
+		sourceColumn: regiao_sigla
+
+		annotation SummarizationSetBy = Automatic
+
+	column regiao
+		dataType: string
+		lineageTag: 089945cf-8f21-42f4-905d-c2075b1b130c
+		summarizeBy: none
+		sourceColumn: regiao
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_ibge
+		dataType: int64
+		formatString: 0
+		lineageTag: 610ccae9-5cfe-4c49-aa2a-be67abf37589
+		summarizeBy: sum
+		sourceColumn: cod_ibge
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_uf = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(File.Contents("C:\Users\lucas\Documents\radar-atendimento-consumidor\radar-atendimento-consumidor\powerbi\dados\dim_uf.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table
+

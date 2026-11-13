@@ -21,3 +21,10 @@ Thumbs.db
 # Power BI: arquivos temporários de backup
 *.pbix.bak
 ~$*
+
+# Power BI Project (.pbip): configurações locais e cache de dados ficam só na máquina
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+powerbi/*_backup/
+# scripts da exibição TMDL são rascunho local; a versão oficial das medidas é powerbi/medidas.tmdl
+**/TMDLScripts/

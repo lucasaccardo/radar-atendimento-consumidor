@@ -1,0 +1,80 @@
+table fato_canal_mensal
+	lineageTag: d79d6088-bb78-4d13-ae42-9fd62c90e8ca
+
+	column data_mes
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: bd9e7b29-e7e3-4c11-ae32-22d8bcc9a502
+		summarizeBy: none
+		sourceColumn: data_mes
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column uf
+		dataType: string
+		isHidden
+		lineageTag: a578905b-76b7-4bc5-ac91-a2951c729f3f
+		summarizeBy: none
+		sourceColumn: uf
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column servico
+		dataType: string
+		isHidden
+		lineageTag: 738a0c8d-a3e2-41e2-9874-4debbefd8168
+		summarizeBy: none
+		sourceColumn: servico
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column operadora
+		dataType: string
+		isHidden
+		lineageTag: afb8ac37-544e-47ac-bee0-3f37dd2e9c5f
+		summarizeBy: none
+		sourceColumn: operadora
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column canal_entrada
+		dataType: string
+		lineageTag: 276061e8-745f-45f8-b3e6-744581142c4e
+		summarizeBy: none
+		sourceColumn: canal_entrada
+
+		annotation SummarizationSetBy = Automatic
+
+	column solicitacoes
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e0920896-bbdc-4a9e-ae65-408ec61d8c9c
+		summarizeBy: sum
+		sourceColumn: solicitacoes
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fato_canal_mensal = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(File.Contents("C:\Users\lucas\Documents\radar-atendimento-consumidor\radar-atendimento-consumidor\powerbi\dados\fato_canal_mensal.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table
+

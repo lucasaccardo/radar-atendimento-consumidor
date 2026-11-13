@@ -1,0 +1,27 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["dim_assunto","dim_calendario","dim_operadora","dim_populacao","dim_servico","dim_uf","fato_atendimento_mensal","fato_canal_mensal","_Medidas"]
+
+annotation PBI_ProTooling = ["TMDLView_Desktop","DevMode"]
+
+ref table dim_assunto
+ref table dim_calendario
+ref table dim_operadora
+ref table dim_populacao
+ref table dim_servico
+ref table dim_uf
+ref table fato_atendimento_mensal
+ref table fato_canal_mensal
+ref table _Medidas
+
+ref cultureInfo pt-BR
+

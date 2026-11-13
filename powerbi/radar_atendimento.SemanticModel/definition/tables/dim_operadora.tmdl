@@ -1,0 +1,65 @@
+table dim_operadora
+	lineageTag: 43fe18b5-b49b-471f-b545-b6ed758d7073
+
+	column id_operadora
+		dataType: int64
+		formatString: 0
+		lineageTag: 0075f59e-5d92-4e0e-8591-6da305045aea
+		summarizeBy: none
+		sourceColumn: id_operadora
+
+		annotation SummarizationSetBy = Automatic
+
+	column prestadora
+		dataType: string
+		lineageTag: a0901b8a-12d0-43b7-8f94-86025ccece0a
+		summarizeBy: none
+		sourceColumn: prestadora
+
+		annotation SummarizationSetBy = Automatic
+
+	column grupo_marca
+		dataType: string
+		lineageTag: a9cf0587-33f6-4ed4-b6cd-7a4d58559e51
+		summarizeBy: none
+		sourceColumn: grupo_marca
+
+		annotation SummarizationSetBy = Automatic
+
+	column volume_periodo
+		dataType: int64
+		formatString: 0
+		lineageTag: 51c256bc-1958-443f-8666-35b4473a110b
+		summarizeBy: none
+		sourceColumn: volume_periodo
+
+		annotation SummarizationSetBy = Automatic
+
+	column participacao_grupo
+		dataType: double
+		lineageTag: 38572884-39a2-45d8-875e-fef4d38ce1b1
+		summarizeBy: none
+		sourceColumn: participacao_grupo
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column operadora_exibicao
+		dataType: string
+		lineageTag: 5a9ffe18-7ec4-4ebb-8c86-a8a6917d0459
+		summarizeBy: none
+		sourceColumn: operadora_exibicao
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_operadora = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(File.Contents("C:\Users\lucas\Documents\radar-atendimento-consumidor\radar-atendimento-consumidor\powerbi\dados\dim_operadora.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table
+

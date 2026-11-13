@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "radar_atendimento"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "1dd355fb-53ac-4369-a01c-2ac122a1cbfd"
+  }
+}

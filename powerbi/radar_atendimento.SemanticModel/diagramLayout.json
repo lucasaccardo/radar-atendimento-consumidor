@@ -1,0 +1,126 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 818.79303714752848,
+            "y": 81.271944869193064
+          },
+          "nodeIndex": "dim_assunto",
+          "nodeLineageTag": "54f60737-cc6d-497d-9b42-d44bcd79d5bb",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 1095.4652348552308,
+            "y": 227.2875167482832
+          },
+          "nodeIndex": "dim_calendario",
+          "nodeLineageTag": "177eb2d0-767b-4975-9334-21b1f2770cda",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 825.12290843853214,
+            "y": 514.13650990576957
+          },
+          "nodeIndex": "dim_operadora",
+          "nodeLineageTag": "43fe18b5-b49b-471f-b545-b6ed758d7073",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "dim_populacao",
+          "nodeLineageTag": "9ac29e3d-6d1d-4b98-be68-932a030688b1",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 296.17512478502709,
+            "y": 86.122710205830629
+          },
+          "nodeIndex": "dim_uf",
+          "nodeLineageTag": "59ced3d5-a205-43ad-9cd5-a38a61e675ac",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 570.9510026461943,
+            "y": 250.69588805555344
+          },
+          "nodeIndex": "fato_atendimento_mensal",
+          "nodeLineageTag": "93358aa7-db90-4e5e-a34b-b6254c503112",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 261.80533756625653
+          },
+          "nodeIndex": "fato_canal_mensal",
+          "nodeLineageTag": "d79d6088-bb78-4d13-ae42-9fd62c90e8ca",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 300.993102441754,
+            "y": 471.15007721751311
+          },
+          "nodeIndex": "dim_servico",
+          "nodeLineageTag": "ad6c4280-d2ea-411f-be0a-80758152b9f6",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 7
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 63.287087723234059,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

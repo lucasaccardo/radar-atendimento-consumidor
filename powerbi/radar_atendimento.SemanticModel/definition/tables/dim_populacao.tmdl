@@ -1,0 +1,63 @@
+table dim_populacao
+	isHidden
+	lineageTag: 9ac29e3d-6d1d-4b98-be68-932a030688b1
+
+	column uf
+		dataType: string
+		isHidden
+		lineageTag: 7a55e3d2-3a62-4b76-9057-e9fbc6ba461c
+		summarizeBy: none
+		sourceColumn: uf
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ano
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 54afbdd7-b485-4d88-867d-0031c1e86dc9
+		summarizeBy: sum
+		sourceColumn: ano
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column populacao
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bf075e84-1983-4d46-a3b5-6ad284c08048
+		summarizeBy: sum
+		sourceColumn: populacao
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ano_estimativa_usada
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8eaba33b-f7bd-4cb5-a3bf-79a6e812f6fb
+		summarizeBy: sum
+		sourceColumn: ano_estimativa_usada
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_populacao = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(File.Contents("C:\Users\lucas\Documents\radar-atendimento-consumidor\radar-atendimento-consumidor\powerbi\dados\dim_populacao.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				in
+				    Fonte
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+

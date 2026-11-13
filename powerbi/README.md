@@ -2,12 +2,19 @@
 
 | Arquivo | O que é |
 |---|---|
-| `radar_atendimento.pbix` | Relatório Power BI (modelo estrela + medidas DAX) |
+| `radar_atendimento.pbix` | Relatório pronto para abrir, com os dados embutidos |
+| `radar_atendimento.pbip` + pastas `.Report` e `.SemanticModel` | O mesmo relatório como código-fonte (PBIR + TMDL): cada visual e cada medida é um arquivo de texto, versionado no Git |
 | `medidas.tmdl` | As 43 medidas DAX como código (aplicadas pela exibição TMDL do Power BI Desktop) |
 | `tema_radar.json` | Tema do relatório, com as mesmas cores da lâmina HTML |
 | `dados/*.parquet` | Modelo estrela gerado pelo pipeline (camada ouro) |
 
 Os Parquet são regerados a cada execução do pipeline (`python pipeline/executar_pipeline.py`) e pela atualização automática mensal. Para atualizar o `.pbix`, abra-o e clique em **Atualizar**.
+
+O modelo lê os Parquet de `powerbi/dados` por caminho absoluto. Em outro computador, ajuste a origem em **Transformar dados → Configurações da fonte de dados** antes de atualizar.
+
+## Página Radar
+
+Mesma ordem de leitura da lâmina HTML: o que mudou (7 KPIs com variação colorida) → quando (evolução mensal) → por onde (canais) → onde (por 100 mil hab. por UF) → quem (operadoras: tempo x reabertura) → por quê (volume e reabertura por assunto) → detalhe (tabela de medidas). A página **Conferência** fica oculta no modo de leitura e compara os números com a lâmina.
 
 ## Modelo
 

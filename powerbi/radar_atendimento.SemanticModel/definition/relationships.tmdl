@@ -1,0 +1,32 @@
+relationship AutoDetected_cbcad547-031b-4eea-904f-3a13c1c78ccf
+	fromColumn: fato_atendimento_mensal.id_assunto
+	toColumn: dim_assunto.id_assunto
+
+relationship AutoDetected_4c380d1c-c10c-4896-8afc-44f0be96373b
+	fromColumn: fato_atendimento_mensal.id_operadora
+	toColumn: dim_operadora.id_operadora
+
+relationship AutoDetected_49304a36-2e35-4a9e-86e3-a09554c9e67b
+	fromColumn: fato_atendimento_mensal.uf
+	toColumn: dim_uf.uf
+
+relationship AutoDetected_e9e6eb5a-e8da-453a-ab9d-52a8cf9ccdc2
+	fromColumn: fato_atendimento_mensal.id_servico
+	toColumn: dim_servico.id_servico
+
+relationship AutoDetected_35c030b2-ff49-4483-b2c5-93773bb9f484
+	fromColumn: fato_canal_mensal.uf
+	toColumn: dim_uf.uf
+
+relationship AutoDetected_fc6cee2c-70e7-408d-8530-1a76dc1eada8
+	fromColumn: fato_canal_mensal.servico
+	toColumn: dim_servico.servico
+
+relationship 732f8076-29ad-8fd5-0dcf-74987688220b
+	fromColumn: fato_atendimento_mensal.data_mes
+	toColumn: dim_calendario.data_mes
+
+relationship 0c8fb736-aaf1-dd2c-3a06-9f5cf679c4c1
+	fromColumn: fato_canal_mensal.data_mes
+	toColumn: dim_calendario.data_mes
+

@@ -1,0 +1,90 @@
+table dim_calendario
+	lineageTag: 177eb2d0-767b-4975-9334-21b1f2770cda
+
+	column data_mes
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: dc6e9e4f-2f52-45e7-9328-67ea7a38791f
+		summarizeBy: none
+		sourceColumn: data_mes
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ano
+		dataType: int64
+		formatString: 0
+		lineageTag: e2764dda-4b74-4d9d-85da-044711ec526e
+		summarizeBy: none
+		sourceColumn: ano
+
+		annotation SummarizationSetBy = User
+
+	column mes
+		dataType: int64
+		formatString: 0
+		lineageTag: cb4ee328-43a8-47b1-86df-a6e1f39953f2
+		summarizeBy: none
+		sourceColumn: mes
+
+		annotation SummarizationSetBy = User
+
+	column trimestre
+		dataType: int64
+		formatString: 0
+		lineageTag: 3b64ed3d-d679-45b7-9f9b-5955b5e47909
+		summarizeBy: none
+		sourceColumn: trimestre
+
+		annotation SummarizationSetBy = User
+
+	column nome_mes
+		dataType: string
+		lineageTag: de200067-96c9-4004-ad5a-287fed3ed39a
+		summarizeBy: none
+		sourceColumn: nome_mes
+		sortByColumn: mes
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column rotulo_mes
+		dataType: string
+		lineageTag: 958a138f-1f76-45d3-9a00-de4a705f019e
+		summarizeBy: none
+		sourceColumn: rotulo_mes
+		sortByColumn: data_mes
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column ano_mes
+		dataType: string
+		lineageTag: 2aad997e-5d96-4164-b1f0-2f44024c8fe7
+		summarizeBy: none
+		sourceColumn: ano_mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column tem_dados
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 2e8a80f1-fba4-4ef8-b4ff-2277a3e03ae1
+		summarizeBy: none
+		sourceColumn: tem_dados
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_calendario = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(File.Contents("C:\Users\lucas\Documents\radar-atendimento-consumidor\radar-atendimento-consumidor\powerbi\dados\dim_calendario.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				in
+				    Fonte
+
+	annotation PBI_ResultType = Table
+

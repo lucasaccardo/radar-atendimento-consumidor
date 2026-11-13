@@ -1,0 +1,197 @@
+table fato_atendimento_mensal
+	isHidden
+	lineageTag: 93358aa7-db90-4e5e-a34b-b6254c503112
+
+	column data_mes
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 6dc88d2b-f91e-45a7-8c99-6ecd8f0f0210
+		summarizeBy: none
+		sourceColumn: data_mes
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column uf
+		dataType: string
+		isHidden
+		lineageTag: 80f6a6f5-82af-4bb0-8adb-4d38fbeaada3
+		summarizeBy: none
+		sourceColumn: uf
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_servico
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c842fba1-32f9-4953-a3e6-cc7733715f47
+		summarizeBy: none
+		sourceColumn: id_servico
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_operadora
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9e52ec5c-5094-4ff0-97d4-0fcd48f27956
+		summarizeBy: none
+		sourceColumn: id_operadora
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_assunto
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3201acf5-2c06-41a0-b4a2-2954ebf991e4
+		summarizeBy: none
+		sourceColumn: id_assunto
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column reclamacoes
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bf3ec095-6649-42c0-8551-39c67fe2df39
+		summarizeBy: sum
+		sourceColumn: reclamacoes
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column respondidas
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fadb2980-1aa7-404f-a4f9-830e02b43022
+		summarizeBy: sum
+		sourceColumn: respondidas
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column respondidas_no_sla
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 36581075-431f-4ad0-b4f7-db753e6f8e83
+		summarizeBy: sum
+		sourceColumn: respondidas_no_sla
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column soma_tempo_resposta
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 23fe94c2-1ca2-4533-887f-e3584876d065
+		summarizeBy: sum
+		sourceColumn: soma_tempo_resposta
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column qtd_tempo_resposta
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 945be787-444c-47ef-9ead-71818151d37d
+		summarizeBy: sum
+		sourceColumn: qtd_tempo_resposta
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column reabertas
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cbc0dff1-78b1-424f-bb55-f9858d673be8
+		summarizeBy: sum
+		sourceColumn: reabertas
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column avaliadas
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b207d8b1-aee1-4bc4-9d9d-b654c763576f
+		summarizeBy: sum
+		sourceColumn: avaliadas
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column resolvidas
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 800308b3-81dc-499b-8951-cb6a3a18906c
+		summarizeBy: sum
+		sourceColumn: resolvidas
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column soma_nota
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b08826e0-0f57-4767-aa08-4864b868f287
+		summarizeBy: sum
+		sourceColumn: soma_nota
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column qtd_nota
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a01f7441-3bf1-4926-bb05-042d3e6f3f05
+		summarizeBy: sum
+		sourceColumn: qtd_nota
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fato_atendimento_mensal = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(File.Contents("C:\Users\lucas\Documents\radar-atendimento-consumidor\radar-atendimento-consumidor\powerbi\dados\fato_atendimento_mensal.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				in
+				    Fonte
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+

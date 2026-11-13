@@ -1,0 +1,252 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "3f795ac2cd1ba9c06456",
+  "position": {
+    "x": 55.714285714285715,
+    "y": 338.57142857142861,
+    "z": 2,
+    "height": 201.42857142857144,
+    "width": 1218.5714285714287,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Reclamações"
+                }
+              },
+              "queryRef": "_Medidas.Reclamações",
+              "nativeQueryRef": "Reclamações"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Reclamações por 100 mil hab."
+                }
+              },
+              "queryRef": "_Medidas.Reclamações por 100 mil hab.",
+              "nativeQueryRef": "Reclamações por 100 mil hab."
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Taxa de reabertura"
+                }
+              },
+              "queryRef": "_Medidas.Taxa de reabertura",
+              "nativeQueryRef": "Taxa de reabertura"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "% Respondidas no prazo"
+                }
+              },
+              "queryRef": "_Medidas.% Respondidas no prazo",
+              "nativeQueryRef": "% Respondidas no prazo"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "% Resolvidas"
+                }
+              },
+              "queryRef": "_Medidas.% Resolvidas",
+              "nativeQueryRef": "% Resolvidas"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Var. % reclamações"
+                }
+              },
+              "queryRef": "_Medidas.Var. % reclamações",
+              "nativeQueryRef": "Var. % reclamações"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Var. resolvidas (p.p.)"
+                }
+              },
+              "queryRef": "_Medidas.Var. resolvidas (p.p.)",
+              "nativeQueryRef": "Var. resolvidas (p.p.)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Período analisado"
+                }
+              },
+              "queryRef": "_Medidas.Período analisado",
+              "nativeQueryRef": "Período analisado"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "2285d780a30cad0b1037",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Reclamações"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "65afa37883ac35a0175b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Reclamações por 100 mil hab."
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ad7a0e831c35a774013b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Taxa de reabertura"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b6929b3ae40ee804053e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "% Respondidas no prazo"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "2f93318380dd5c78c719",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "% Resolvidas"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "303d4951ace9ed065544",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Var. % reclamações"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "48fa1bb759b2934182e0",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Var. resolvidas (p.p.)"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "8f440132059c58000c72",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Período analisado"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
