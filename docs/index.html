@@ -71,6 +71,21 @@ a { color: var(--s1); }
 .hero .wrap { position: relative; z-index: 1; padding-bottom: 0; }
 .hero-arte { position: absolute; right: -60px; top: -70px; width: 520px; height: 520px; opacity: .9; pointer-events: none; }
 @media (max-width: 900px) { .hero-arte { opacity: .35; } }
+/* ---------- movimento ----------
+   Só onde tem função: o radar reforça a identidade do produto; números, barras e linha
+   animam quando os dados mudam, para o olho perceber o que mudou. Tudo curto (< 1 s),
+   e desligado para quem pede menos movimento no sistema operacional. */
+.hero-arte .varredura { transform-origin: 260px 260px; animation: girar 9s linear infinite; }
+.hero-arte .ping { transform-box: fill-box; transform-origin: center; animation: ping 2.4s ease-out infinite; }
+.entrada .cartao, .entrada .tile { animation: surgir .5s ease-out both; animation-delay: calc(var(--i, 0) * 60ms); }
+.barra-preench { transform-origin: left; animation: crescer .6s ease-out both; }
+.desenhar { animation: desenhar .9s ease-out both; }
+@keyframes girar { to { transform: rotate(360deg); } }
+@keyframes ping { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.2); opacity: 0; } }
+@keyframes surgir { from { opacity: 0; transform: translateY(8px); } }
+@keyframes crescer { from { transform: scaleX(0); } }
+@keyframes desenhar { from { stroke-dasharray: 1; stroke-dashoffset: 1; } to { stroke-dasharray: 1; stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
 h1 { font-size: clamp(30px, 4.4vw, 48px); line-height: 1.05; margin: 10px 0 0; letter-spacing: -.02em; max-width: 760px; }
 .pergunta { font-size: clamp(16px, 1.6vw, 19px); color: rgba(255,255,255,.86); margin: 12px 0 0; max-width: 760px; line-height: 1.45; }
 .meta-linha { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12.5px; margin-top: 18px; }
@@ -240,12 +255,14 @@ code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-
 <div id="app" hidden>
 <header class="hero">
   <svg class="hero-arte" viewBox="0 0 520 520" aria-hidden="true">
+    <defs><linearGradient id="feixe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#A6B7FF" stop-opacity="0"/><stop offset="1" stop-color="#A6B7FF" stop-opacity=".45"/></linearGradient></defs>
+    <g class="varredura"><path d="M260 260 L508 260 A248 248 0 0 0 435 85 Z" fill="url(#feixe)"/></g>
     <g fill="none" stroke="rgba(255,255,255,.16)" stroke-width="1.2">
       <circle cx="260" cy="260" r="70"/><circle cx="260" cy="260" r="130"/><circle cx="260" cy="260" r="190"/><circle cx="260" cy="260" r="248"/>
       <line x1="10" y1="260" x2="510" y2="260"/><line x1="260" y1="10" x2="260" y2="510"/>
     </g>
     <g>
-      <circle cx="360" cy="170" r="6" fill="#F05252"/><circle cx="360" cy="170" r="14" fill="none" stroke="#F05252" stroke-opacity=".5"/>
+      <circle cx="360" cy="170" r="6" fill="#F05252"/><circle class="ping" cx="360" cy="170" r="14" fill="none" stroke="#F05252" stroke-opacity=".7"/>
       <circle cx="190" cy="330" r="5" fill="#F0FA00"/><circle cx="410" cy="320" r="4" fill="#09BFAF"/>
       <circle cx="300" cy="400" r="4" fill="#ffffff" fill-opacity=".8"/><circle cx="150" cy="200" r="3.5" fill="#ffffff" fill-opacity=".6"/>
     </g>
@@ -471,7 +488,9 @@ function iniciar() {
   }
   montarFiltros(anos);
   el("app").hidden = false;
+  document.body.classList.add("entrada");
   renderizar();
+  setTimeout(() => document.body.classList.remove("entrada"), 1500);
   let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(renderizar, 150); });
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderizar);
 }
@@ -635,12 +654,26 @@ function renderMeta(per) {
   el("rodapeGerado").textContent = `Publicado em ${new Date(m.gerado_em).toLocaleString("pt-BR")}`;
 }
 
+const ultimoValorKpi = new Map();   // de onde cada número parte na próxima animação
+function animarNumero(no, de, para, formatar) {
+  if (para == null || de === para || matchMedia("(prefers-reduced-motion: reduce)").matches) { no.nodeValue = formatar(para); return; }
+  const inicio = performance.now(), duracao = 600;
+  const passo = agora => {
+    const p = Math.min(1, (agora - inicio) / duracao), suave = 1 - (1 - p) ** 3;
+    no.nodeValue = formatar(p < 1 ? de + (para - de) * suave : para);
+    if (p < 1) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
+}
 function renderKpis(a, b, per) {
   const box = el("kpis"); box.replaceChildren();
-  for (const k of KPIS) {
-    const c = document.createElement("article"); c.className = "cartao kpi";
+  for (const [i, k] of KPIS.entries()) {
+    const c = document.createElement("article"); c.className = "cartao kpi"; c.style.setProperty("--i", i);
     c.append(texto("div", k.nome, "nome"), texto("div", k.detalhe, "detalhe"));
-    const v = document.createElement("div"); v.className = "valor num"; v.textContent = k.f(a[k.id]);
+    const v = document.createElement("div"); v.className = "valor num";
+    const numero = document.createTextNode(""); v.appendChild(numero);
+    animarNumero(numero, ultimoValorKpi.get(k.id) ?? 0, a[k.id], k.f);
+    ultimoValorKpi.set(k.id, a[k.id]);
     if (k.unidade) v.appendChild(texto("small", k.unidade));
     c.appendChild(v);
     const d = per.temComparacao ? variacao(k, a[k.id], b[k.id]) : null;
@@ -698,13 +731,13 @@ function renderEvolucao(per) {
   per.numsMes.forEach((nm, i) => {
     const tx = svg("text", { x: x(i), y: H - 6, "text-anchor": "middle" }, g); tx.textContent = NOMES_MES[nm - 1];
   });
-  const linha = (valores, cor, largura) => {
+  const linha = (valores, cor, largura, extras = {}) => {
     let d = "", aberto = false;
     valores.forEach((v, i) => { if (v == null) { aberto = false; return; } d += `${aberto ? "L" : "M"}${x(i)},${y(v)}`; aberto = true; });
-    svg("path", { d, fill: "none", stroke: cor, "stroke-width": largura, "stroke-linejoin": "round", "stroke-linecap": "round" }, g);
+    svg("path", { d, fill: "none", stroke: cor, "stroke-width": largura, "stroke-linejoin": "round", "stroke-linecap": "round", ...extras }, g);
   };
   if (anterior) linha(anterior, css("--prev"), 2);
-  linha(atual, css("--s1"), 2.5);
+  linha(atual, css("--s1"), 2.5, { class: "desenhar", pathLength: 1 });   // pathLength=1 deixa a animação independente do tamanho
   // marcador e rótulo direto só no último ponto do ano atual (rotulagem seletiva)
   const ult = atual.map((v, i) => v != null ? i : -1).filter(i => i >= 0).pop();
   if (ult != null) {
@@ -761,6 +794,7 @@ function renderMapa(per) {
   for (const d of dados) {
     const [c, l] = POSICOES[d.u.sigla] || [5, 7];
     const b = document.createElement("button"); b.type = "button"; b.className = "tile num";
+    b.style.setProperty("--i", l);
     const k = cor(d.taxa);
     b.style.background = k.bg; b.style.color = k.claro ? "#ffffff" : "#0b0b0b";
     b.style.gridColumn = c + 1; b.style.gridRow = l + 1;
