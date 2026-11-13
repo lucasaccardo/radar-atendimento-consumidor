@@ -665,7 +665,7 @@ function renderMeta(per) {
   const m = D.meta, q = window.QUALIDADE;
   const ml = el("metaLinha"); ml.replaceChildren();
   const item = (rot, val) => { const s = document.createElement("span"); s.append(rot + " ", texto("b", val)); ml.appendChild(s); };
-  item("Período:", per.temComparacao ? `${per.rotulo} vs ${per.rotuloAnt}` : per.rotulo);
+  item("Período:", per.temComparacao ? `${per.rotuloAnt} → ${per.rotulo}` : per.rotulo);
   const mesAno = s => `${NOMES_MES[+s.slice(5, 7) - 1]}/${s.slice(0, 4)}`;
   item("Série disponível:", `${mesAno(m.competencia_inicio)} a ${mesAno(m.competencia_fim)}`);
   const dt = m.arquivo_anatel_atualizado_em && m.arquivo_anatel_atualizado_em !== "amostra"
@@ -1053,7 +1053,7 @@ function renderTabela(per) {
     part: 100, mediaMensal: kt.reclamacoes / Math.max(1, mesesAtual.length),
     mm3: serieTot.length >= 3 ? serieTot.slice(-3).reduce((s, v) => s + v, 0) / 3 : null };
   for (const c of cols) { const td = tf.insertCell(); if (c.id === "spark") td.appendChild(sparkline(serieTot)); else td.textContent = c.f(valTot[c.id]); }
-  el("subTabela").textContent = `${recorteTexto()} · ${per.rotulo}` + (per.temComparacao ? ` vs ${per.rotuloAnt}` : "") +
+  el("subTabela").textContent = `${recorteTexto()} · ` + (per.temComparacao ? `${per.rotuloAnt} → ${per.rotulo}` : per.rotulo) +
     ". Clique no título de uma coluna para ordenar.";
 }
 function sparkline(serie) {

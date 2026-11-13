@@ -110,8 +110,8 @@ createOrReplace
 						TRUE (),
 						ISBLANK ( AnoSel ), "Selecione um ano",
 						ISBLANK ( MesIni ), BLANK (),
-						Faixa & "/" & AnoSel
-							& IF ( TemAnterior, " vs " & Faixa & "/" & ( AnoSel - 1 ), " (sem ano anterior para comparar)" )
+						TemAnterior, Faixa & "/" & ( AnoSel - 1 ) & " → " & Faixa & "/" & AnoSel,
+						Faixa & "/" & AnoSel & " (sem ano anterior para comparar)"
 					)
 			displayFolder: 2. Apoio
 
