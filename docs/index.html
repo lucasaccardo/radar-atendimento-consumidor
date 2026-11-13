@@ -80,6 +80,10 @@ a { color: var(--s1); }
 .entrada .cartao, .entrada .tile { animation: surgir .5s ease-out both; animation-delay: calc(var(--i, 0) * 60ms); }
 .barra-preench { transform-origin: left; animation: crescer .6s ease-out both; }
 .desenhar { animation: desenhar .9s ease-out both; }
+.revelar { opacity: 0; transform: translateY(16px); }
+.revelado { transition: opacity .6s ease-out, transform .6s ease-out; }
+.revelar .barra-preench, .revelar .desenhar { animation: none; }   /* guardam a animação para quando o bloco aparecer */
+@media print { .revelar { opacity: 1; transform: none; } }
 @keyframes girar { to { transform: rotate(360deg); } }
 @keyframes ping { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.2); opacity: 0; } }
 @keyframes surgir { from { opacity: 0; transform: translateY(8px); } }
@@ -491,8 +495,26 @@ function iniciar() {
   document.body.classList.add("entrada");
   renderizar();
   setTimeout(() => document.body.classList.remove("entrada"), 1500);
+  revelarAoRolar();
   let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(renderizar, 150); });
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderizar);
+}
+
+// Blocos abaixo da primeira tela aparecem quando o usuário rola até eles: assim as barras e a
+// linha animam na hora em que são vistas, e não escondidas antes de alguém chegar lá.
+// Só os blocos fixos do HTML (os cartões do topo são recriados a cada filtro e já estão à vista).
+function revelarAoRolar() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+  const observador = new IntersectionObserver(entradas => {
+    for (const e of entradas) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add("revelado"); e.target.classList.remove("revelar"); observador.unobserve(e.target);
+    }
+  }, { threshold: 0.15 });
+  for (const bloco of document.querySelectorAll("#app section:not(#resumo):not(#kpis) > article.cartao, #app section.cartao")) {
+    if (bloco.getBoundingClientRect().top < innerHeight) continue;
+    bloco.classList.add("revelar"); observador.observe(bloco);
+  }
 }
 
 function opcao(sel, valor, rotulo) { const o = document.createElement("option"); o.value = valor; o.textContent = rotulo; sel.appendChild(o); }
